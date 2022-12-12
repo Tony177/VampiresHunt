@@ -6,6 +6,8 @@
 //
 
 import SpriteKit
+import AVFoundation
+import GameKit
 
 class GameScene: SKScene {
     private let coinsAtlas : SKTextureAtlas = SKTextureAtlas(named: "coin")
@@ -22,8 +24,19 @@ class GameScene: SKScene {
     var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
     var typeOfCivil = ["citizen1", "citizen2", "virgin"]
     let background = SKSpriteNode(imageNamed: "Background")
+    let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
     
     override func didMove(to view: SKView) {
+        physicsWorld.contactDelegate = self
+        audioEngine.mainMixerNode.outputVolume = 0.0
+        musicAudioNode.autoplayLooped = true
+        musicAudioNode.isPositional = false
+        addChild(musicAudioNode)
+        musicAudioNode.run(SKAction.changeVolume(to: 0.0, duration: 0.0))
+        run(SKAction.wait(forDuration: 1.0)) {
+            [unowned self] in self.audioEngine.mainMixerNode.outputVolume = 1.0
+            self.musicAudioNode.run(SKAction.changeVolume(to: 0.75, duration: 2.0))
+        }
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
         background.name = "background"
