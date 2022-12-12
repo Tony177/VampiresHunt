@@ -9,19 +9,28 @@ import SpriteKit
 
 class GameScene: SKScene {
     private let coinsAtlas : SKTextureAtlas = SKTextureAtlas(named: "coin")
-    private let projectiles : [String] = ["arrow"]
+    private let projectiles : [String] = ["Arrow1"]
     private let coins : [String] = ["normal","woman"]
-    private let player : SKSpriteNode = SKSpriteNode(imageNamed: "player")
+    let player = Player()
     private var lives : Int = 3
     private var blood : Int = 0
     private var clock : TimeInterval = 0.0
     private var coinvalue : SKLabelNode?
+    var dropSpeed: CGFloat = 1.0
+    let minDropSpeed: CGFloat = 0.12
+    let maxDropSpeed: CGFloat = 1.0
+    var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
+    var typeOfCivil = ["citizen1", "citizen2", "virgin"]
+    let background = SKSpriteNode(imageNamed: "Background")
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
-        
-        backgroundColor = SKColor.white
+        background.name = "background"
+        background.anchorPoint = CGPoint(x: 0, y: 0)
+        background.zPosition = Layer.background.rawValue
+        background.position = CGPoint(x: 0, y: 0)
+        addChild(background)
         addMenu()
         setClock()
         addPlayer()
@@ -31,7 +40,7 @@ class GameScene: SKScene {
     
     private func startSpawn(){
         spawnProjectile()
-        spawnCoin()
+        spawnMultipleCitizen()
     }
     private func spawnProjectile(){
         run(SKAction.repeatForever(
@@ -41,21 +50,40 @@ class GameScene: SKScene {
             ])
         ))
     }
-    private func spawnCoin(){
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(addCoin),
-                SKAction.wait(forDuration: 5.0, withRange: 4.0),
-                SKAction.run(removeCoin)
-            ])
-        ))
+    
+    func spawnCitizen(citizenType: Citizen.CitizenType){
+        citizen = Citizen(citizenType: citizenType)
+        let margin = citizen.size.width * 2
+        let spawnRange = SKRange(lowerLimit: frame.minX + margin, upperLimit: frame.maxX - margin)
+        let randomX = CGFloat.random(in: spawnRange.lowerLimit...spawnRange.upperLimit)
+        citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
+        addChild(citizen)
+        citizen.spawn(spawnTime: TimeInterval(2.0))
     }
+    
+    func spawnMultipleCitizen(){
+        let wait = SKAction.wait(forDuration: TimeInterval(3.0), withRange: TimeInterval(3.0))
+        let spawn = SKAction.run {
+            let type = self.typeOfCivil.randomElement()
+            if(type == "citizen1"){
+                self.spawnCitizen(citizenType: Citizen.CitizenType.citizen1)
+            }else if(type == "citizen2"){
+                self.spawnCitizen(citizenType: Citizen.CitizenType.citizen2)
+            }else{
+                self.spawnCitizen(citizenType: Citizen.CitizenType.virgin)
+            }
+        }
+        let sequence = SKAction.sequence([wait, spawn])
+        let repeatAction = SKAction.repeat(sequence, count: 20)
+        run(repeatAction, withKey: "citizen")
+    }
+
     private func setClock() {
         let clockLabel = SKLabelNode()
         let dateFormatter = DateComponentsFormatter()
         clockLabel.text = dateFormatter.string(from: self.clock)!
         clockLabel.fontSize = CGFloat(26)
-        clockLabel.zPosition = Layer.layer2
+        clockLabel.zPosition = Layer.ui.rawValue
         clockLabel.position = CGPoint(x: size.width/2, y: size.height*0.9)
         addChild(clockLabel)
         run(SKAction.repeatForever(
@@ -67,47 +95,19 @@ class GameScene: SKScene {
             ])
         ))
     }
+    
     private func addPlayer() {
-        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
-        
-        player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
-        player.physicsBody?.isDynamic = true
-        player.physicsBody?.categoryBitMask = PhysicsCategory.player
-        player.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
-        player.physicsBody?.collisionBitMask = PhysicsCategory.none
-        player.physicsBody?.usesPreciseCollisionDetection = true
-        
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
         addChild(player)
+        player.walk()
     }
-    private func addCoin(){
-        let randomCoin = coins.randomElement()!
-        let textureList = [coinsAtlas.textureNamed(randomCoin + "1"),coinsAtlas.textureNamed(randomCoin + "2"),
-                           coinsAtlas.textureNamed(randomCoin + "3"),coinsAtlas.textureNamed(randomCoin + "2")]
-        let coin = SKSpriteNode(texture: coinsAtlas.textureNamed(randomCoin + "1"))
-        coin.name = "coin"
-        coin.size = CGSize(width: 32, height: 64)
-        coin.physicsBody = SKPhysicsBody(rectangleOf: coin.size)
-        coin.physicsBody?.isDynamic = true
-        coin.physicsBody?.categoryBitMask = PhysicsCategory.coin
-        coin.physicsBody?.contactTestBitMask = PhysicsCategory.player
-        coin.physicsBody?.collisionBitMask = PhysicsCategory.none
-        coin.physicsBody?.usesPreciseCollisionDetection = true
-        let actualX = random(min: size.width*0.05, max: size.width*0.95)
-        coin.position = CGPoint(x: actualX, y: size.height*0.1)
-        addChild(coin)
-        coin.run(SKAction.repeatForever(SKAction.animate(with: textureList, timePerFrame: 0.25)))
-    }
-    private func removeCoin(){
-        if let coin = childNode(withName: "coin"){
-            coin.removeFromParent()
-        }
-    }
+    
     private func addProjectile() {
         
         let projectile = SKSpriteNode(imageNamed: projectiles.randomElement()!)
         projectile.physicsBody = SKPhysicsBody(rectangleOf: projectile.size)
         projectile.physicsBody?.isDynamic = true
-        projectile.physicsBody?.categoryBitMask = PhysicsCategory.projectile
+        projectile.physicsBody?.categoryBitMask = PhysicsCategory.arrow
         projectile.physicsBody?.contactTestBitMask = PhysicsCategory.player
         projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
         let actualX = random(min: projectile.size.height/2, max: size.width - projectile.size.height/2)
@@ -119,11 +119,12 @@ class GameScene: SKScene {
         let actionMoveDone = SKAction.removeFromParent()
         projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
     }
+    
     private func addMenu(){
         let menu = SKShapeNode(rect: CGRect(x: 0, y: size.height*0.85, width: size.width, height: size.height*0.85))
         menu.strokeColor = .black
         menu.fillColor = .gray
-        menu.zPosition = Layer.layer1
+        menu.zPosition = Layer.ui.rawValue
         addChild(menu)
         let hearts = [SKSpriteNode(imageNamed: "heart"),
                       SKSpriteNode(imageNamed: "heart"),
@@ -131,19 +132,19 @@ class GameScene: SKScene {
         for i in hearts.indices{
             hearts[i].position = CGPoint(x: size.width - CGFloat(i*40+30), y: size.height * 0.90)
             hearts[i].name = "heart."+String(i)
-            hearts[i].zPosition = Layer.layer2
+            hearts[i].zPosition = Layer.ui.rawValue
             addChild(hearts[i])
         }
         
         let scoreicon = SKSpriteNode(imageNamed: "blood")
         scoreicon.position = CGPoint(x: size.width*0.05, y: size.height*0.85+scoreicon.size.height)
-        scoreicon.zPosition = Layer.layer2
+        scoreicon.zPosition = Layer.ui.rawValue
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
         scorevalue.text = String(blood)
         scorevalue.fontSize = CGFloat(26)
         scorevalue.position = CGPoint(x: size.width*0.1, y: size.height*0.85+scorevalue.fontSize)
-        scorevalue.zPosition = Layer.layer2
+        scorevalue.zPosition = Layer.ui.rawValue
         scorevalue.name = "scorevalue"
         self.coinvalue = scorevalue
         addChild(scorevalue)
@@ -161,11 +162,10 @@ class GameScene: SKScene {
             child.removeFromParent()
             let h = SKSpriteNode(imageNamed: "empty")
             h.position = CGPoint(x: size.width - CGFloat((lives-1)*40+30), y: size.height * 0.90)
-            h.zPosition = Layer.layer2
+            h.zPosition = Layer.ui.rawValue
             addChild(h)
             lives = lives - 1
         }
-        
         if(lives == 0) {
             resetMatch()
             
@@ -200,13 +200,12 @@ class GameScene: SKScene {
                     player.xScale = abs(player.xScale) * -1
                     player.run(SKAction.moveTo(x:size.width*0.05, duration: dur))
                 }
-                
             }
-            
         }
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         player.removeAllActions()
+        player.walk()
     }
 }
 
@@ -224,7 +223,7 @@ extension GameScene : SKPhysicsContactDelegate {
         
         // Player - Projectile
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.projectile != 0)) {
+            (secondBody.categoryBitMask & PhysicsCategory.arrow != 0)) {
             if let player = firstBody.node as? SKSpriteNode,
                let projectile = secondBody.node as? SKSpriteNode {
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
@@ -233,7 +232,7 @@ extension GameScene : SKPhysicsContactDelegate {
         }
         // Player - Coin
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.coin != 0)) {
+            (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let player = firstBody.node as? SKSpriteNode,
                let coin = secondBody.node as? SKSpriteNode {
                 coinDidCollideWithPlayer(coin: coin, player: player)
