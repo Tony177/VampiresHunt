@@ -23,13 +23,8 @@ class Player: SKSpriteNode{
         self.name = "player"
         self.setScale(1.0)
         self.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        self.zPosition = Layer.player.rawValue
-        self.physicsBody = SKPhysicsBody(rectangleOf: self.size, center: CGPoint(x: 0.0, y: self.size.height / 2))
-        self.physicsBody?.affectedByGravity = false
-        self.physicsBody?.isDynamic = true
-        self.physicsBody?.categoryBitMask = PhysicsCategory.player
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.arrow
-        self.physicsBody?.collisionBitMask = PhysicsCategory.none
+        self.position = CGPoint(x: size.width/2, y: size.height*0.05)
+        self.zPosition = Layer.player.rawValue       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -39,23 +34,6 @@ class Player: SKSpriteNode{
     func walk(){
         guard let walkTextures = walkTextures else { preconditionFailure("Could not find textures!") }
         startAnimation(texture: walkTextures, speed: 0.25, name: PlayerAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
-    }
-    
-    func moveToPosition(pos: CGPoint, direction: String, duration: TimeInterval){
-        switch direction{
-        case "L":
-            xScale = -abs(xScale)
-        default:
-            xScale = abs(xScale)
-        }
-        let moveAction = SKAction.move(to: pos, duration: speed)
-        run(moveAction)
-    }
-    
-    func setupConstraints(floor: CGFloat){
-        let range = SKRange(lowerLimit: floor, upperLimit: floor)
-        let lockToPlatform = SKConstraint.positionY(range)
-        constraints = [lockToPlatform]
     }
     
 }

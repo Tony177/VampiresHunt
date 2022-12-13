@@ -52,20 +52,15 @@ extension SKSpriteNode{
     }
     
 }
-
-extension SKScene {
-    
-    func viewTop() -> CGFloat {
-        return convertPoint(fromView: CGPoint(x: 0.0, y: 0)).y
-    }
-    
-    func viewBottom() -> CGFloat {
-        guard let view = view else { return 0.0 }
-        return convertPoint(fromView: CGPoint(x: 0.0, y: view.bounds.size.height)).y
-    }
-    
+func setupPhysics<T:SKSpriteNode>(node: inout T, categoryBitMask : UInt32, contactTestBitMask : UInt32,collisionBitMask: UInt32 = UInt32(0),affectedByGravity : Bool = false, isDynamic: Bool = true ) -> Void
+{
+    node.physicsBody = SKPhysicsBody(rectangleOf: node.size, center: CGPoint(x: 0.0, y: node.size.height / 2))
+    node.physicsBody?.affectedByGravity = false
+    node.physicsBody?.isDynamic = true
+    node.physicsBody?.categoryBitMask = categoryBitMask
+    node.physicsBody?.contactTestBitMask = contactTestBitMask
+    node.physicsBody?.collisionBitMask = collisionBitMask
 }
-
 func random(min: CGFloat, max: CGFloat) -> CGFloat {
     return CGFloat.random(in: 0...1)  * (max - min) + min
 }

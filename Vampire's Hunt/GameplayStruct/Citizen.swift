@@ -52,12 +52,7 @@ class Citizen: SKSpriteNode {
         }
         self.name = "city_\(citizenType)"
         self.zPosition = Layer.citizen.rawValue
-        self.physicsBody = SKPhysicsBody(rectangleOf: self.size, center: CGPoint(x: 0.0, y: -(self.size.height/12)))
-        self.physicsBody?.affectedByGravity = false
-        self.physicsBody?.isDynamic = true
-        self.physicsBody?.categoryBitMask = PhysicsCategory.citizen
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.player
-        self.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -75,8 +70,7 @@ class Citizen: SKSpriteNode {
     }
     
     func kill(){
-        let remouveFromParent = SKAction.removeFromParent()
-        self.run(remouveFromParent)
+        self.run(SKAction.removeFromParent())
     }
     
 }

@@ -16,7 +16,7 @@ class GameScene: SKScene {
     private let coins : [String] = ["normal","woman"]
     private let background = SKSpriteNode(imageNamed: "Background")
     private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
-    private let player = Player()
+    private var player = Player()
     private var lives : Int = 3
     private var blood : Int = 0
     private var clock : TimeInterval = 0.0
@@ -32,7 +32,6 @@ class GameScene: SKScene {
     }
     
     override func didMove(to view: SKView) {
-        physicsWorld.contactDelegate = self
         audioEngine.mainMixerNode.outputVolume = 0.0
         musicAudioNode.autoplayLooped = true
         musicAudioNode.isPositional = false
@@ -73,10 +72,11 @@ class GameScene: SKScene {
     
     func spawnCitizen(citizenType: Citizen.CitizenType){
         citizen = Citizen(citizenType: citizenType)
+        setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
         let margin = citizen.size.width * 2
         let spawnRange = SKRange(lowerLimit: frame.minX + margin, upperLimit: frame.maxX - margin)
         let randomX = CGFloat.random(in: spawnRange.lowerLimit...spawnRange.upperLimit)
-        citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
+        citizen.position = CGPoint(x: randomX, y: size.height * 0.05)
         addChild(citizen)
         citizen.spawn(spawnTime: TimeInterval(2.0))
     }
@@ -117,6 +117,7 @@ class GameScene: SKScene {
     }
     private func addPlayer() {
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
+        setupPhysics(node: &player, categoryBitMask: PhysicsCategory.player, contactTestBitMask: PhysicsCategory.arrow)
         player.constraints = [SKConstraint.distance(SKRange(lowerLimit: -size.width*0.45,upperLimit: size.width*0.45), to: CGPoint(x: size.width/2, y: size.height*0.05))]
         addChild(player)
         player.walk()
@@ -124,13 +125,9 @@ class GameScene: SKScene {
     
     private func addProjectile() {
         
-        let projectile = SKSpriteNode(imageNamed: projectiles.randomElement()!)
-        projectile.physicsBody = SKPhysicsBody(rectangleOf: projectile.size)
-        projectile.physicsBody?.isDynamic = true
-        projectile.physicsBody?.categoryBitMask = PhysicsCategory.arrow
-        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.player
-        projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
+        var projectile = SKSpriteNode(imageNamed: projectiles.randomElement()!)
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
+        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player)
         projectile.position = CGPoint(x: actualX, y: size.width + projectile.size.height)
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
         addChild(projectile)
@@ -165,9 +162,9 @@ class GameScene: SKScene {
         self.coinvalue = scorevalue
         addChild(scorevalue)
     }
-    func coinDidCollideWithPlayer(coin: SKSpriteNode, player: SKSpriteNode){
-        print("Coin")
-        coin.removeFromParent()
+    func citizenDidCollideWithPlayer(citizen: SKSpriteNode, player: SKSpriteNode){
+        print("citizen")
+        citizen.removeFromParent()
         blood += 90
         self.coinvalue?.text = String(blood)
     }
@@ -243,12 +240,12 @@ extension GameScene : SKPhysicsContactDelegate {
                 return
             }
         }
-        // Player - Coin
+        // Player - Citizen
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let player = firstBody.node as? SKSpriteNode,
-               let coin = secondBody.node as? SKSpriteNode {
-                coinDidCollideWithPlayer(coin: coin, player: player)
+               let citizen = secondBody.node as? SKSpriteNode {
+                citizenDidCollideWithPlayer(citizen: citizen, player: player)
                 return
             }
         }
