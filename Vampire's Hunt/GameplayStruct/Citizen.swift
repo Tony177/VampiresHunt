@@ -69,8 +69,8 @@ class Citizen: SKSpriteNode {
         }
     }
     func spawn(spawnTime: TimeInterval){
-        let scaleX = SKAction.scaleX(to: 1.0, duration: 1.0)
-        let scaleY = SKAction.scaleY(to: 1.3, duration: 1.0)
+        let scaleX = SKAction.scaleX(to: 1.0, duration: (spawnTime - 0.25)/2.0)
+        let scaleY = SKAction.scaleY(to: 1.3, duration: (spawnTime - 0.25)/2.0)
         let scale = SKAction.group([scaleX, scaleY])
         let appear = SKAction.fadeAlpha(to: 1.0, duration: 0.25)
         let actionSequence = SKAction.sequence([appear, scale])

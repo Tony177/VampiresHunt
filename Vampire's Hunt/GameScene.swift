@@ -16,11 +16,15 @@ class GameScene: SKScene {
     private var player = Player()
     private var lives : Int = 3
     private var blood : Int = 0
-    private var clock : TimeInterval = 60.0
+    private var clock : TimeInterval = 0.0
     private var coinvalue : SKLabelNode?
     private var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
     private var typeOfCivil = ["citizen1", "citizen2", "virgin"]
     
+    var scalingFactor : CGFloat {
+        return pow(0.75, clock/10.0)
+        
+    }
     var dropSpeed : CGFloat {
         // divided by 10 for unit every 10s
         // divided by 100 to get 0.01 decimal point
@@ -58,7 +62,7 @@ class GameScene: SKScene {
     }
     private func spawnProjectile(){
         // MARK: Not updating scalingFactor beacuse of one time call
-        let scalingFactor = pow(0.75, clock/10.0)
+       
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addProjectile),
@@ -72,21 +76,20 @@ class GameScene: SKScene {
         citizen = Citizen(citizenType: citizenType)
         setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
         let margin = citizen.size.width * 2
-        let spawnRange = SKRange(lowerLimit: frame.minX + margin, upperLimit: frame.maxX - margin)
-        let randomX = CGFloat.random(in: spawnRange.lowerLimit...spawnRange.upperLimit)
+        let randomX = [random(min: frame.maxX + margin, max: player.position.x - 100),random(min: player.position.x + 100, max: frame.maxX - margin)].randomElement()!
         citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
         addChild(citizen)
-        citizen.spawn(spawnTime: TimeInterval(2.0))
+        citizen.spawn(spawnTime: TimeInterval(1.75))
     }
     
     func spawnMultipleCitizen(){
-        let wait = SKAction.wait(forDuration: TimeInterval(3.0), withRange: TimeInterval(3.0))
+        let wait = SKAction.wait(forDuration: TimeInterval(2.0), withRange: TimeInterval(1.5))
         let spawn = SKAction.run {
             let type = weightedRandomCitizen(phase: Int(self.clock/10))
             self.spawnCitizen(citizenType: type)
         }
         let sequence = SKAction.sequence([wait, spawn])
-        let repeatAction = SKAction.repeat(sequence, count: 20)
+        let repeatAction = SKAction.repeat(sequence, count: 10000)
         run(repeatAction, withKey: "citizen")
     }
     
@@ -127,7 +130,7 @@ class GameScene: SKScene {
     private func addMenu(){
         let menu = SKShapeNode(rect: CGRect(x: 0, y: size.height*0.85, width: size.width, height: size.height*0.85))
         menu.strokeColor = .black
-        menu.fillColor = .gray
+        menu.fillColor = UIColor(.gray).withAlphaComponent(0.2)
         menu.zPosition = Layer.ui.rawValue
         addChild(menu)
         let hearts = [SKSpriteNode(imageNamed: "heart"),
@@ -226,6 +229,8 @@ extension GameScene : SKPhysicsContactDelegate {
             if let player = firstBody.node as? Player,
                let projectile = secondBody.node as? Arrow {
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
+                let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
+                run(arrowAudioNode)
                 return
             }
         }
@@ -234,6 +239,8 @@ extension GameScene : SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let citizen = secondBody.node as? Citizen {
                 citizenDidCollideWithPlayer(citizen: citizen)
+                let bitAudioNode = SKAction.playSoundFileNamed("BiteBloodPickup.mp3", waitForCompletion: false)
+                run(bitAudioNode)
                 return
             }
         }
