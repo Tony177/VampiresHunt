@@ -10,21 +10,26 @@ import AVFoundation
 import GameKit
 
 class GameScene: SKScene {
+    private let baseSpeed : CGFloat = -350
     private let coinsAtlas : SKTextureAtlas = SKTextureAtlas(named: "coin")
     private let projectiles : [String] = ["Arrow1"]
     private let coins : [String] = ["normal","woman"]
-    let player = Player()
+    private let background = SKSpriteNode(imageNamed: "Background")
+    private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
+    private let player = Player()
     private var lives : Int = 3
     private var blood : Int = 0
     private var clock : TimeInterval = 0.0
     private var coinvalue : SKLabelNode?
-    var dropSpeed: CGFloat = 1.0
-    let minDropSpeed: CGFloat = 0.12
-    let maxDropSpeed: CGFloat = 1.0
-    var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
-    var typeOfCivil = ["citizen1", "citizen2", "virgin"]
-    let background = SKSpriteNode(imageNamed: "Background")
-    let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
+    private var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
+    private var typeOfCivil = ["citizen1", "citizen2", "virgin"]
+    
+    var dropSpeed : CGFloat {
+        // divided by 10 for unit every 10s
+        // divided by 100 to get 0.01 decimal point
+        // multiplied by 5 to decrese faster
+        return  ((0.005 * baseSpeed * clock)).rounded()
+    }
     
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -56,13 +61,15 @@ class GameScene: SKScene {
         spawnMultipleCitizen()
     }
     private func spawnProjectile(){
+        let scalingFactor = pow(0.6, clock/10.0)
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addProjectile),
-                SKAction.wait(forDuration: 2.0,withRange: 3.5)
+                SKAction.wait(forDuration: 2.0 * scalingFactor,withRange: 3.5 * scalingFactor)
             ])
         ))
     }
+    
     
     func spawnCitizen(citizenType: Citizen.CitizenType){
         citizen = Citizen(citizenType: citizenType)
@@ -90,7 +97,7 @@ class GameScene: SKScene {
         let repeatAction = SKAction.repeat(sequence, count: 20)
         run(repeatAction, withKey: "citizen")
     }
-
+    
     private func setClock() {
         let clockLabel = SKLabelNode()
         let dateFormatter = DateComponentsFormatter()
@@ -108,9 +115,9 @@ class GameScene: SKScene {
             ])
         ))
     }
-    
     private func addPlayer() {
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
+        player.constraints = [SKConstraint.distance(SKRange(lowerLimit: -size.width*0.45,upperLimit: size.width*0.45), to: CGPoint(x: size.width/2, y: size.height*0.05))]
         addChild(player)
         player.walk()
     }
@@ -123,14 +130,10 @@ class GameScene: SKScene {
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.arrow
         projectile.physicsBody?.contactTestBitMask = PhysicsCategory.player
         projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
-        let actualX = random(min: projectile.size.height/2, max: size.width - projectile.size.height/2)
+        let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
         projectile.position = CGPoint(x: actualX, y: size.width + projectile.size.height)
+        projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
         addChild(projectile)
-        let actualDuration = CGFloat(4)//random(min: CGFloat(2.0), max: CGFloat(4.0))
-        let actionMove = SKAction.move(to: CGPoint(x: actualX, y: -projectile.size.height),
-                                       duration: TimeInterval(actualDuration))
-        let actionMoveDone = SKAction.removeFromParent()
-        projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
     }
     
     private func addMenu(){
@@ -177,7 +180,7 @@ class GameScene: SKScene {
             h.position = CGPoint(x: size.width - CGFloat((lives-1)*40+30), y: size.height * 0.90)
             h.zPosition = Layer.ui.rawValue
             addChild(h)
-            lives = lives - 1
+            lives -= 1
         }
         if(lives == 0) {
             resetMatch()
@@ -202,22 +205,19 @@ class GameScene: SKScene {
         for touch in touches{
             let loc = touch.location(in: self)
             // Movement area check
-            if (loc.x > size.width * 0.8 || loc.x < size.width * 0.2){
-                player.removeAllActions()
-                let dur : CGFloat = abs(loc.x-player.position.x)/300
-                
+            if (loc.x > size.width * 0.8 || loc.x < size.width * 0.2 ){
                 if (loc.x - player.position.x > 0) {
                     player.xScale = abs(player.xScale)
-                    player.run(SKAction.moveTo(x:size.width*0.95 , duration: dur))
+                    player.physicsBody?.velocity = CGVector(dx: 300, dy: 0)
                 } else {
                     player.xScale = abs(player.xScale) * -1
-                    player.run(SKAction.moveTo(x:size.width*0.05, duration: dur))
+                    player.physicsBody?.velocity = CGVector(dx: -300, dy: 0)
                 }
             }
         }
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        player.removeAllActions()
+        player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         player.walk()
     }
 }
