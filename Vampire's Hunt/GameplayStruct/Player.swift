@@ -33,6 +33,6 @@ class Player: SKSpriteNode{
     
     func walk(){
         guard let walkTextures = walkTextures else { preconditionFailure("Could not find textures!") }
-        startAnimation(texture: walkTextures, speed: 0.25, name: PlayerAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
+        startAnimation(texture: walkTextures, speed: 0.4, name: PlayerAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
     }
 }

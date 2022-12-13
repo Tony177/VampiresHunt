@@ -58,7 +58,16 @@ class Citizen: SKSpriteNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    func getCoinValue() -> Int{
+        switch self.citizenType {
+        case .citizen1:
+            return 10
+        case .citizen2:
+            return 25
+        default:
+            return 75
+        }
+    }
     func spawn(spawnTime: TimeInterval){
         let scaleX = SKAction.scaleX(to: 1.0, duration: 1.0)
         let scaleY = SKAction.scaleY(to: 1.3, duration: 1.0)

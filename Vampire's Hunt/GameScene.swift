@@ -11,14 +11,12 @@ import GameKit
 
 class GameScene: SKScene {
     private let baseSpeed : CGFloat = -350
-    private let projectiles : [String] = ["Arrow1"]
-    private let coins : [String] = ["normal","woman"]
     private let background = SKSpriteNode(imageNamed: "Background")
     private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
     private var player = Player()
     private var lives : Int = 3
     private var blood : Int = 0
-    private var clock : TimeInterval = 0.0
+    private var clock : TimeInterval = 60.0
     private var coinvalue : SKLabelNode?
     private var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
     private var typeOfCivil = ["citizen1", "citizen2", "virgin"]
@@ -59,6 +57,7 @@ class GameScene: SKScene {
         spawnMultipleCitizen()
     }
     private func spawnProjectile(){
+        // MARK: Not updating scalingFactor beacuse of one time call
         let scalingFactor = pow(0.75, clock/10.0)
         run(SKAction.repeatForever(
             SKAction.sequence([
@@ -117,11 +116,10 @@ class GameScene: SKScene {
     }
     
     private func addProjectile() {
-        
-        var projectile = SKSpriteNode(imageNamed: projectiles.randomElement()!)
+        var projectile = Arrow(arrowType: Arrow.ArrowType.arrow)
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
         setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player)
-        projectile.position = CGPoint(x: actualX, y: size.width + projectile.size.height)
+        projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
         addChild(projectile)
     }
@@ -155,13 +153,13 @@ class GameScene: SKScene {
         self.coinvalue = scorevalue
         addChild(scorevalue)
     }
-    func citizenDidCollideWithPlayer(citizen: SKSpriteNode, player: SKSpriteNode){
-        print("citizen")
+    func citizenDidCollideWithPlayer(citizen: Citizen){
+        print("Point")
+        blood += citizen.getCoinValue()
         citizen.removeFromParent()
-        blood += 90
         self.coinvalue?.text = String(blood)
     }
-    func projectileDidCollideWithPlayer(projectile: SKSpriteNode, player: SKSpriteNode) {
+    func projectileDidCollideWithPlayer(projectile: Arrow, player: Player) {
         print("Hit")
         projectile.removeFromParent()
         if let child = childNode(withName: "heart."+String(lives-1)) {
@@ -174,7 +172,6 @@ class GameScene: SKScene {
         }
         if(lives == 0) {
             resetMatch()
-            
         }
     }
     
@@ -182,7 +179,7 @@ class GameScene: SKScene {
         print("Dead")
         removeAllChildren()
         let leaderboard = decodeLeaderboard(userDefaultsKey: "score")
-        let leaderboardChanged = leaderboard.copyAddRecord(record: Record(name: "Test", score: blood))
+        let leaderboardChanged = leaderboard.copyAddRecord(record: Record(name: "You", score: blood))
         encodeLeaderboard(userDefaultsKey: "score",leaderboard:leaderboardChanged)
         let reveal = SKTransition.reveal(with: .down,duration: 1)
         let newScene = EndScene()
@@ -208,7 +205,6 @@ class GameScene: SKScene {
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        player.walk()
     }
 }
 
@@ -227,8 +223,8 @@ extension GameScene : SKPhysicsContactDelegate {
         // Player - Projectile
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.arrow != 0)) {
-            if let player = firstBody.node as? SKSpriteNode,
-               let projectile = secondBody.node as? SKSpriteNode {
+            if let player = firstBody.node as? Player,
+               let projectile = secondBody.node as? Arrow {
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 return
             }
@@ -236,9 +232,8 @@ extension GameScene : SKPhysicsContactDelegate {
         // Player - Citizen
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
-            if let player = firstBody.node as? SKSpriteNode,
-               let citizen = secondBody.node as? SKSpriteNode {
-                citizenDidCollideWithPlayer(citizen: citizen, player: player)
+            if let citizen = secondBody.node as? Citizen {
+                citizenDidCollideWithPlayer(citizen: citizen)
                 return
             }
         }
