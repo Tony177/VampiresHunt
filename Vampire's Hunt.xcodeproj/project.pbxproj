@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		8168B31E29476A5C00526BE4 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B31D29476A5C00526BE4 /* Player.swift */; };
 		8168B32029476A8300526BE4 /* Citizen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B31F29476A8300526BE4 /* Citizen.swift */; };
-		8168B32329476AC600526BE4 /* Arrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B32229476AC600526BE4 /* Arrows.swift */; };
+		8168B32329476AC600526BE4 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B32229476AC600526BE4 /* Arrow.swift */; };
 		8168B32529476B1100526BE4 /* SpritekitHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B32429476B1100526BE4 /* SpritekitHelper.swift */; };
 		8168B3282947901F00526BE4 /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3272947901F00526BE4 /* backgroundMusic.mp3 */; };
 		8168B32B2947918D00526BE4 /* BiteBloodPickup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */; };
@@ -25,7 +25,7 @@
 /* Begin PBXFileReference section */
 		8168B31D29476A5C00526BE4 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		8168B31F29476A8300526BE4 /* Citizen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Citizen.swift; sourceTree = "<group>"; };
-		8168B32229476AC600526BE4 /* Arrows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrows.swift; sourceTree = "<group>"; };
+		8168B32229476AC600526BE4 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
 		8168B32429476B1100526BE4 /* SpritekitHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpritekitHelper.swift; sourceTree = "<group>"; };
 		8168B3272947901F00526BE4 /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
 		8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BiteBloodPickup.mp3; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				8168B31D29476A5C00526BE4 /* Player.swift */,
-				8168B32229476AC600526BE4 /* Arrows.swift */,
+				8168B32229476AC600526BE4 /* Arrow.swift */,
 				8168B31F29476A8300526BE4 /* Citizen.swift */,
 			);
 			path = GameplayStruct;
@@ -186,7 +186,7 @@
 				EA24F607294093140081DED2 /* EndScene.swift in Sources */,
 				EAAD88F329406FE60013B91C /* GameScene.swift in Sources */,
 				EAAD88F029406FE60013B91C /* MainView.swift in Sources */,
-				8168B32329476AC600526BE4 /* Arrows.swift in Sources */,
+				8168B32329476AC600526BE4 /* Arrow.swift in Sources */,
 				EAA50CEF2940F6990045A523 /* Leaderboard.swift in Sources */,
 				8168B31E29476A5C00526BE4 /* Player.swift in Sources */,
 				EAAD88F229406FE60013B91C /* MainApp.swift in Sources */,

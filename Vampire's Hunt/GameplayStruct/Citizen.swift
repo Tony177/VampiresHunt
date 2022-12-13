@@ -22,7 +22,7 @@ class Citizen: SKSpriteNode {
         case virgin
     }
     
-    enum CitizenAnimationTye: String{
+    enum CitizenAnimationType: String{
         case walk
     }
     
@@ -42,13 +42,13 @@ class Citizen: SKSpriteNode {
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
         if(self.citizenType == .citizen1){
             self.walkTextures1 = self.loadTexture(atlas: "Citizen", prefix: "Citizen1-frame", startsAt: 1, stopAt: 4)
-            startAnimation(texture: walkTextures1!, speed: 0.25, name: CitizenAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
+            startAnimation(texture: walkTextures1!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
         }else if(self.citizenType == .citizen2){
             self.walkTextures2 = self.loadTexture(atlas: "Citizen", prefix: "Citizen2-frame", startsAt: 1, stopAt: 4)
-            startAnimation(texture: walkTextures2!, speed: 0.25, name: CitizenAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
+            startAnimation(texture: walkTextures2!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
         }else{
             self.walkTextures3 = self.loadTexture(atlas: "Citizen", prefix: "Virgin-frame", startsAt: 1, stopAt: 4)
-            startAnimation(texture: walkTextures3!, speed: 0.25, name: CitizenAnimationTye.walk.rawValue, count: 0, resize: true, restore: true)
+            startAnimation(texture: walkTextures3!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
         }
         self.name = "city_\(citizenType)"
         self.zPosition = Layer.citizen.rawValue
@@ -67,10 +67,5 @@ class Citizen: SKSpriteNode {
         let actionSequence = SKAction.sequence([appear, scale])
         self.scale(to: CGSize(width: 0.25, height: 1.0))
         self.run(actionSequence, withKey: "spawn")
-    }
-    
-    func kill(){
-        self.run(SKAction.removeFromParent())
-    }
-    
+    }    
 }

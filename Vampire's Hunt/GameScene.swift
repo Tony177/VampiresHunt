@@ -11,7 +11,6 @@ import GameKit
 
 class GameScene: SKScene {
     private let baseSpeed : CGFloat = -350
-    private let coinsAtlas : SKTextureAtlas = SKTextureAtlas(named: "coin")
     private let projectiles : [String] = ["Arrow1"]
     private let coins : [String] = ["normal","woman"]
     private let background = SKSpriteNode(imageNamed: "Background")
@@ -60,7 +59,7 @@ class GameScene: SKScene {
         spawnMultipleCitizen()
     }
     private func spawnProjectile(){
-        let scalingFactor = pow(0.6, clock/10.0)
+        let scalingFactor = pow(0.75, clock/10.0)
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addProjectile),
@@ -76,7 +75,7 @@ class GameScene: SKScene {
         let margin = citizen.size.width * 2
         let spawnRange = SKRange(lowerLimit: frame.minX + margin, upperLimit: frame.maxX - margin)
         let randomX = CGFloat.random(in: spawnRange.lowerLimit...spawnRange.upperLimit)
-        citizen.position = CGPoint(x: randomX, y: size.height * 0.05)
+        citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
         addChild(citizen)
         citizen.spawn(spawnTime: TimeInterval(2.0))
     }
@@ -84,14 +83,8 @@ class GameScene: SKScene {
     func spawnMultipleCitizen(){
         let wait = SKAction.wait(forDuration: TimeInterval(3.0), withRange: TimeInterval(3.0))
         let spawn = SKAction.run {
-            let type = self.typeOfCivil.randomElement()
-            if(type == "citizen1"){
-                self.spawnCitizen(citizenType: Citizen.CitizenType.citizen1)
-            }else if(type == "citizen2"){
-                self.spawnCitizen(citizenType: Citizen.CitizenType.citizen2)
-            }else{
-                self.spawnCitizen(citizenType: Citizen.CitizenType.virgin)
-            }
+            let type = weightedRandomCitizen(phase: Int(self.clock/10))
+            self.spawnCitizen(citizenType: type)
         }
         let sequence = SKAction.sequence([wait, spawn])
         let repeatAction = SKAction.repeat(sequence, count: 20)
