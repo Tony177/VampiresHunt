@@ -8,26 +8,26 @@
 import Foundation
 import SpriteKit
 
-class Arrow: SKSpriteNode{
+class Projectile: SKSpriteNode{
     
-    private var arrowType: ArrowType = .none
+    private var projectileType: ProjectileType = .none
     
-    enum ArrowType: String{
+    enum ProjectileType: String{
         case none
         case arrow
+        case cross
+        case holywater
     }
-    
-    init(arrowType: ArrowType) {
+    func getArrow() -> ProjectileType{
+        return self.projectileType
+    }
+    init(projectileType: ProjectileType) {
         var texture: SKTexture!
-        self.arrowType = arrowType
-        switch self.arrowType{
-        case .arrow:
-            texture = SKTexture(imageNamed: "Arrow1")
-        case .none:
-            break
+        self.projectileType = projectileType
+        if (self.projectileType != .none) {
+            texture = SKTexture(imageNamed: self.projectileType.rawValue)
         }
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
-        self.name = "co_\(arrowType)"
         self.anchorPoint = CGPoint(x: 0.5, y: 1.0)
         self.zPosition = Layer.arrow.rawValue
     }

@@ -84,4 +84,17 @@ func weightedRandomCitizen(phase : Int) -> Citizen.CitizenType{
         return Citizen.CitizenType.virgin
     }
 }
-
+func weightedRandomProjectile(phase: Int) -> Projectile.ProjectileType{
+    if (phase >= pC1.count) {
+        return Projectile.ProjectileType.arrow
+    }
+    let random : CGFloat = CGFloat.random(in: 0...1)
+    switch random {
+    case 0..<pC1[phase]:
+        return Projectile.ProjectileType.arrow
+    case pC1[phase]..<pC1[phase]+pC2[phase]:
+        return Projectile.ProjectileType.cross
+    default:
+        return Projectile.ProjectileType.holywater
+    }
+}

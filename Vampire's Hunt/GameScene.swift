@@ -21,6 +21,7 @@ class GameScene: SKScene {
     private var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
     private var dropSpeed : CGFloat = 0.0
     private var scalingFactor : CGFloat = 0.75
+    private var debuffSpeed : CGFloat = 1.0
     
     
     override func didMove(to view: SKView) {
@@ -91,15 +92,15 @@ class GameScene: SKScene {
     func spawnCitizen(citizenType: Citizen.CitizenType){
         citizen = Citizen(citizenType: citizenType)
         setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
-        let margin = citizen.size.width * 2
-        let randomX = [random(min: frame.maxX + margin, max: player.position.x - 100),random(min: player.position.x + 100, max: frame.maxX - margin)].randomElement()!
+        
+        let randomX = random(min: size.width*0.05, max: size.width*0.95)
         citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
         addChild(citizen)
-        citizen.spawn(spawnTime: TimeInterval(1.75))
+        citizen.spawn(spawnTime: TimeInterval(1))
     }
     
     func spawnMultipleCitizen(){
-        let wait = SKAction.wait(forDuration: TimeInterval(2.0), withRange: TimeInterval(1.5))
+        let wait = SKAction.wait(forDuration: TimeInterval(0.75), withRange: TimeInterval(0.25))
         let spawn = SKAction.run {
             let type = weightedRandomCitizen(phase: self.stage)
             self.spawnCitizen(citizenType: type)
@@ -115,7 +116,7 @@ class GameScene: SKScene {
         clockLabel.name = "clock"
         clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
         clockLabel.zPosition = Layer.ui.rawValue
-        clockLabel.position = CGPoint(x: size.width/2, y: size.height*0.9)
+        clockLabel.position = CGPoint(x: size.width*0.1, y: size.height*0.9)
         addChild(clockLabel)
         run(SKAction.repeatForever(
             SKAction.sequence([
@@ -135,7 +136,7 @@ class GameScene: SKScene {
     }
     
     private func spawnProjectile() {
-        var projectile = Arrow(arrowType: Arrow.ArrowType.arrow)
+        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage))
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
         setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player)
         projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
@@ -160,12 +161,12 @@ class GameScene: SKScene {
         }
         
         let scoreicon = SKSpriteNode(imageNamed: "blood")
-        scoreicon.position = CGPoint(x: size.width*0.05, y: size.height*0.85+scoreicon.size.height)
+        scoreicon.position = CGPoint(x: size.width*0.45, y: size.height*0.84+scoreicon.size.height)
         scoreicon.zPosition = Layer.ui.rawValue
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
         scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
-        scorevalue.position = CGPoint(x: size.width*0.1, y: size.height*0.85+scorevalue.fontSize)
+        scorevalue.position = CGPoint(x: size.width*0.5, y: size.height*0.81+scorevalue.fontSize)
         scorevalue.zPosition = Layer.ui.rawValue
         scorevalue.name = "scorevalue"
         self.coinvalue = scorevalue
@@ -176,10 +177,32 @@ class GameScene: SKScene {
         let bitesTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireBite", startsAt: 1, stopAt: 3)
         player.startAnimation(texture: bitesTexture, speed: 0.15, name: "bite", count: 1, resize: true, restore: true)
         blood += citizen.getCoinValue()
-        citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(removeFromParent)]))
-        self.coinvalue?.text = String(blood)
+        citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(citizen.removeFromParent)]))
+        self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
     }
-    func projectileDidCollideWithPlayer(projectile: Arrow, player: Player) {
+    func projectileDidCollideWithPlayer(projectile: Projectile, player: Player) {
+        if(projectile.getArrow() == Projectile.ProjectileType.cross){
+            run(SKAction.sequence([
+                SKAction.run({
+                    self.debuffSpeed = 0.7
+                    if(player.xScale < 0){
+                        player.physicsBody?.velocity = CGVector(dx: -300 * self.debuffSpeed, dy: 0)
+                    } else {
+                        player.physicsBody?.velocity = CGVector(dx: 300 * self.debuffSpeed, dy: 0)
+                    }
+                }),
+                SKAction.wait(forDuration: 3),
+                SKAction.run({self.debuffSpeed = 1.0})
+            ]))
+        }
+        if(projectile.getArrow() == Projectile.ProjectileType.holywater){
+            run(SKAction.sequence([
+                SKAction.run({self.debuffSpeed = 0.0
+                    player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)}),
+                SKAction.wait(forDuration: 1),
+                SKAction.run({self.debuffSpeed = 1.0})
+            ]))
+        }
         print("Hit")
         projectile.removeFromParent()
         if let child = childNode(withName: "heart."+String(lives-1)) {
@@ -210,17 +233,15 @@ class GameScene: SKScene {
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches{
-            let loc = touch.location(in: self)
-            // Movement area check
-            if (loc.x > size.width * 0.8 || loc.x < size.width * 0.2 ){
-                if (loc.x - player.position.x > 0) {
+                let loc = touch.location(in: self)
+                // Movement area check
+                if (loc.x > size.width * 0.5) {
                     player.xScale = abs(player.xScale)
-                    player.physicsBody?.velocity = CGVector(dx: 300, dy: 0)
+                    player.physicsBody?.velocity = CGVector(dx: 300 * debuffSpeed, dy: 0)
                 } else {
                     player.xScale = abs(player.xScale) * -1
-                    player.physicsBody?.velocity = CGVector(dx: -300, dy: 0)
+                    player.physicsBody?.velocity = CGVector(dx: -300 * debuffSpeed, dy: 0)
                 }
-            }
         }
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -250,7 +271,7 @@ extension GameScene : SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.arrow != 0)) {
             if let player = firstBody.node as? Player,
-               let projectile = secondBody.node as? Arrow {
+               let projectile = secondBody.node as? Projectile {
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
                 run(arrowAudioNode)
