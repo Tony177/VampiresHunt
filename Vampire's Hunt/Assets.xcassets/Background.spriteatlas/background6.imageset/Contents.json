@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Vampire2.png",
+      "filename" : "Backgrondframe6.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Vampire2 1.png",
+      "filename" : "Backgrondframe6 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Backgrondframe6 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

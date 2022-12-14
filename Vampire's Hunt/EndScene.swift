@@ -22,7 +22,7 @@ class EndScene : SKScene {
         }
         let restartButton = SKLabelNode()
         restartButton.position = CGPoint(x: size.width/4, y: size.height*0.5)
-        restartButton.text = "Restart"
+        restartButton.attributedText = NSAttributedString(string: "Restart", attributes: [.font: UIFont(name: "Casaletwo", size: 40.0)!])
         restartButton.name = "restart"
         addChild(restartButton)
         
