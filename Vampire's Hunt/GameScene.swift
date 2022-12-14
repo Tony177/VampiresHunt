@@ -114,7 +114,7 @@ class GameScene: SKScene {
         let dateFormatter = DateComponentsFormatter()
         clockLabel.name = "clock"
         //clockLabel.text = dateFormatter.string(from: self.clock)!
-        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "Casaletwo", size: 26)!])
+        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "Nosifer-Regular", size: 26)!])
         //clockLabel.fontSize = CGFloat(26)
         clockLabel.zPosition = Layer.ui.rawValue
         clockLabel.position = CGPoint(x: size.width/2, y: size.height*0.9)
@@ -167,7 +167,7 @@ class GameScene: SKScene {
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
         //scorevalue.text = String(blood)
-        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "Casaletwo", size: 26)!])
+        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "Nosifer-Regular", size: 26)!])
         //scorevalue.fontSize = CGFloat(26)
         scorevalue.position = CGPoint(x: size.width*0.1, y: size.height*0.85+scorevalue.fontSize)
         scorevalue.zPosition = Layer.ui.rawValue

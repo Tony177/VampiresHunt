@@ -14,7 +14,7 @@
 		8168B3282947901F00526BE4 /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3272947901F00526BE4 /* backgroundMusic.mp3 */; };
 		8168B32B2947918D00526BE4 /* BiteBloodPickup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */; };
 		8168B32C2947918D00526BE4 /* Hitby_falling_object.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B32A2947918D00526BE4 /* Hitby_falling_object.mp3 */; };
-		81B70A492949F1A0007CD9C7 /* Casaletwo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81B70A482949F1A0007CD9C7 /* Casaletwo.ttf */; };
+		81AFD988294A179D00F0F1F2 /* Nosifer-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81AFD987294A179D00F0F1F2 /* Nosifer-Regular.ttf */; };
 		EA24F607294093140081DED2 /* EndScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA24F606294093140081DED2 /* EndScene.swift */; };
 		EAA50CEF2940F6990045A523 /* Leaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA50CEE2940F6990045A523 /* Leaderboard.swift */; };
 		EAAD88F029406FE60013B91C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAAD88EC29406FE50013B91C /* MainView.swift */; };
@@ -31,8 +31,7 @@
 		8168B3272947901F00526BE4 /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
 		8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BiteBloodPickup.mp3; sourceTree = "<group>"; };
 		8168B32A2947918D00526BE4 /* Hitby_falling_object.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Hitby_falling_object.mp3; sourceTree = "<group>"; };
-		8168B3302948E1D400526BE4 /* Vampire-s-Hunt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Vampire-s-Hunt-Info.plist"; sourceTree = SOURCE_ROOT; };
-		81B70A482949F1A0007CD9C7 /* Casaletwo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Casaletwo.ttf; path = "../../../../../../../Downloads/casaletwo-nbp-font/Casaletwo.ttf"; sourceTree = "<group>"; };
+		81AFD987294A179D00F0F1F2 /* Nosifer-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nosifer-Regular.ttf"; sourceTree = "<group>"; };
 		EA24F606294093140081DED2 /* EndScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndScene.swift; sourceTree = "<group>"; };
 		EAA50CEE2940F6990045A523 /* Leaderboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Leaderboard.swift; sourceTree = "<group>"; };
 		EAAD88D229406FD10013B91C /* Vampire's Hunt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vampire's Hunt.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,7 +84,7 @@
 		8168B32D2948E18200526BE4 /* Font */ = {
 			isa = PBXGroup;
 			children = (
-				81B70A482949F1A0007CD9C7 /* Casaletwo.ttf */,
+				81AFD987294A179D00F0F1F2 /* Nosifer-Regular.ttf */,
 			);
 			path = Font;
 			sourceTree = "<group>";
@@ -109,7 +108,6 @@
 		EAAD88D429406FD10013B91C /* Vampire's Hunt */ = {
 			isa = PBXGroup;
 			children = (
-				8168B3302948E1D400526BE4 /* Vampire-s-Hunt-Info.plist */,
 				8168B32D2948E18200526BE4 /* Font */,
 				8168B3262947900E00526BE4 /* Sound */,
 				8168B32129476A8F00526BE4 /* GameplayStruct */,
@@ -183,9 +181,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8168B32C2947918D00526BE4 /* Hitby_falling_object.mp3 in Resources */,
-				81B70A492949F1A0007CD9C7 /* Casaletwo.ttf in Resources */,
 				8168B3282947901F00526BE4 /* backgroundMusic.mp3 in Resources */,
 				EAAD88F129406FE60013B91C /* Assets.xcassets in Resources */,
+				81AFD988294A179D00F0F1F2 /* Nosifer-Regular.ttf in Resources */,
 				8168B32B2947918D00526BE4 /* BiteBloodPickup.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
