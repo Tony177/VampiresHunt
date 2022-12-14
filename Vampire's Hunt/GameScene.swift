@@ -54,7 +54,7 @@ class GameScene: SKScene {
         if(stage < 11){ // Last stage
             //MARK: remove spawned citizen
             run(SKAction.sequence([
-                SKAction.wait(forDuration: 5),
+                SKAction.wait(forDuration: 10),
                 SKAction.run {
                     self.removeAllActions()
                     self.removeChildren(in: [self.childNode(withName: "background")!])
@@ -104,7 +104,7 @@ class GameScene: SKScene {
             let type = weightedRandomCitizen(phase: self.stage)
             self.spawnCitizen(citizenType: type)
         }
-        let sequence = SKAction.sequence([wait, spawn])
+        let sequence = SKAction.sequence([wait, spawn, wait, SKAction.run(removeFromParent)])
         let repeatAction = SKAction.repeat(sequence, count: 10000)
         run(repeatAction, withKey: "citizen")
     }
@@ -113,9 +113,7 @@ class GameScene: SKScene {
         let clockLabel = SKLabelNode()
         let dateFormatter = DateComponentsFormatter()
         clockLabel.name = "clock"
-        //clockLabel.text = dateFormatter.string(from: self.clock)!
-        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "Nosifer-Regular", size: 26)!])
-        //clockLabel.fontSize = CGFloat(26)
+        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
         clockLabel.zPosition = Layer.ui.rawValue
         clockLabel.position = CGPoint(x: size.width/2, y: size.height*0.9)
         addChild(clockLabel)
@@ -123,7 +121,7 @@ class GameScene: SKScene {
             SKAction.sequence([
                 SKAction.wait(forDuration: 1),
                 SKAction.run {self.clock += 1
-                    clockLabel.text = dateFormatter.string(from: self.clock)!
+                    clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
                 }
             ])
         ))
@@ -166,9 +164,7 @@ class GameScene: SKScene {
         scoreicon.zPosition = Layer.ui.rawValue
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
-        //scorevalue.text = String(blood)
-        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "Nosifer-Regular", size: 26)!])
-        //scorevalue.fontSize = CGFloat(26)
+        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
         scorevalue.position = CGPoint(x: size.width*0.1, y: size.height*0.85+scorevalue.fontSize)
         scorevalue.zPosition = Layer.ui.rawValue
         scorevalue.name = "scorevalue"
@@ -177,8 +173,10 @@ class GameScene: SKScene {
     }
     func citizenDidCollideWithPlayer(citizen: Citizen){
         print("Point")
+        let bitesTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireBite", startsAt: 1, stopAt: 3)
+        player.startAnimation(texture: bitesTexture, speed: 0.15, name: "bite", count: 1, resize: true, restore: true)
         blood += citizen.getCoinValue()
-        citizen.removeFromParent()
+        citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(removeFromParent)]))
         self.coinvalue?.text = String(blood)
     }
     func projectileDidCollideWithPlayer(projectile: Arrow, player: Player) {

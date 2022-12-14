@@ -8,9 +8,9 @@
 import Foundation
 import SpriteKit
 
-private let pC1 : [CGFloat] = [0.8,0.6,0.5,0.4,0.3,0.2,0.0,0.0,0.0,0.0]
-private let pC2 : [CGFloat] = [0.2,0.4,0.4,0.4,0.4,0.4,0.4,0.3,0.1,0.0]
-private let pC3 : [CGFloat] = [0.0,0.0,0.1,0.2,0.3,0.4,0.6,0.7,0.9,1.0]
+private let pC1 : [CGFloat] = [0.9,0.85,0.8,0.7,0.65,0.6,0.55,0.50,0.4,0.35,0.3]
+private let pC2 : [CGFloat] = [0.1,0.15,0.2,0.25,0.3,0.25,0.3,0.3,0.4,0.45,0.45]
+private let pC3 : [CGFloat] = [0.0,0.0,0.0,0.05,0.1,0.15,0.15,0.2,0.2,0.2,0.25]
 
 enum Layer: CGFloat{
     case background
@@ -67,6 +67,7 @@ func setupPhysics<T:SKSpriteNode>(node: inout T, categoryBitMask : UInt32, conta
 }
 func random(min: CGFloat, max: CGFloat) -> CGFloat {
     return CGFloat.random(in: 0...1)  * (max - min) + min
+    
 }
 
 func weightedRandomCitizen(phase : Int) -> Citizen.CitizenType{
