@@ -56,11 +56,11 @@ extension SKSpriteNode{
     }
     
 }
-func setupPhysics<T:SKSpriteNode>(node: inout T, categoryBitMask : UInt32, contactTestBitMask : UInt32,collisionBitMask: UInt32 = UInt32(0),affectedByGravity : Bool = false, isDynamic: Bool = true ) -> Void
+func setupPhysics<T:SKSpriteNode>(node: inout T, categoryBitMask : UInt32, contactTestBitMask : UInt32,collisionBitMask: UInt32 = UInt32(0),xCenter : CGFloat = 0.0,yCenter : CGFloat = 0.0,affectedByGravity : Bool = false, isDynamic: Bool = true ) -> Void
 {
-    node.physicsBody = SKPhysicsBody(rectangleOf: node.size, center: CGPoint(x: 0.0, y: node.size.height / 2))
-    node.physicsBody?.affectedByGravity = false
-    node.physicsBody?.isDynamic = true
+    node.physicsBody = SKPhysicsBody(rectangleOf: node.size, center: CGPoint(x: xCenter, y: yCenter))
+    node.physicsBody?.affectedByGravity = affectedByGravity
+    node.physicsBody?.isDynamic = isDynamic
     node.physicsBody?.categoryBitMask = categoryBitMask
     node.physicsBody?.contactTestBitMask = contactTestBitMask
     node.physicsBody?.collisionBitMask = collisionBitMask

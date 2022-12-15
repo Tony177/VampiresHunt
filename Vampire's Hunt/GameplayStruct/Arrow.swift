@@ -18,9 +18,6 @@ class Projectile: SKSpriteNode{
         case cross
         case holywater
     }
-    func getArrow() -> ProjectileType{
-        return self.projectileType
-    }
     init(projectileType: ProjectileType) {
         var texture: SKTexture!
         self.projectileType = projectileType
@@ -30,6 +27,10 @@ class Projectile: SKSpriteNode{
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
         self.anchorPoint = CGPoint(x: 0.5, y: 1.0)
         self.zPosition = Layer.arrow.rawValue
+    }
+    
+    func getType() -> ProjectileType{
+        return self.projectileType
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -32,7 +32,7 @@ class EndScene : SKScene {
             let touchPointName = atPoint(loc).name
             if touchPointName == "restart"{
                 removeAllChildren()
-                let Button = SKSpriteNode(imageNamed: "PremutoRetry")
+                let Button = SKSpriteNode(imageNamed: "RetryPressed")
                 Button.position = CGPoint(x: size.width/2, y: size.height*0.2)
                 Button.name = "restart"
                 addChild(Button)

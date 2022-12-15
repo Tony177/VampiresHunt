@@ -10,7 +10,7 @@ import AVFoundation
 import GameKit
 
 class GameScene: SKScene {
-    private let baseSpeed : CGFloat = -350
+    private let baseSpeed : CGFloat = 300
     private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
     private var player = Player()
     private var stage : Int = 1
@@ -103,7 +103,7 @@ class GameScene: SKScene {
     }
     
     func spawnMultipleCitizen(){
-        let wait = SKAction.wait(forDuration: TimeInterval(0.75), withRange: TimeInterval(0.25))
+        let wait = SKAction.wait(forDuration: TimeInterval(1), withRange: TimeInterval(0.25))
         let spawn = SKAction.run {
             let type = weightedRandomCitizen(phase: self.stage)
             self.spawnCitizen(citizenType: type)
@@ -149,7 +149,7 @@ class GameScene: SKScene {
     private func spawnProjectile() {
         var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage))
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
-        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player)
+        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player,yCenter: -20.0 - ((projectile.getType() == .holywater) ? 10 : 0))
         projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
         projectile.physicsBody?.usesPreciseCollisionDetection = true
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
@@ -166,8 +166,8 @@ class GameScene: SKScene {
                       SKSpriteNode(imageNamed: "heart"),
                       SKSpriteNode(imageNamed: "heart")]
         for i in hearts.indices{
-            hearts[i].position = CGPoint(x: size.width - CGFloat(i*40+30), y: size.height * 0.90)
-            hearts[i].name = "heart."+String(i)
+            hearts[i].position = CGPoint(x: size.width - CGFloat((i+1)*40+30), y: size.height * 0.90)
+            hearts[i].name = "heart."+String(i+1)
             hearts[i].zPosition = Layer.ui.rawValue
             addChild(hearts[i])
         }
@@ -187,6 +187,17 @@ class GameScene: SKScene {
     }
     func citizenDidCollideWithPlayer(citizen: Citizen){
         print("Point")
+        if (citizen.getType() == .virgin) {
+            if let child = childNode(withName: "empty."+String(lives+1)) {
+                child.removeFromParent()
+                lives += 1
+                let h = SKSpriteNode(imageNamed: "heart")
+                h.name = "heart."+String(lives)
+                h.position = CGPoint(x: size.width - CGFloat((lives)*40+30), y: size.height * 0.90)
+                h.zPosition = Layer.ui.rawValue
+                addChild(h)
+            }
+        }
         let bitesTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireBite", startsAt: 1, stopAt: 3)
         player.startAnimation(texture: bitesTexture, speed: 0.15, name: "bite", count: 1, resize: true, restore: true)
         blood += citizen.getCoinValue()
@@ -195,27 +206,24 @@ class GameScene: SKScene {
         self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
     }
     func projectileDidCollideWithPlayer(projectile: Projectile, player: Player) {
-        if(projectile.getArrow() == Projectile.ProjectileType.cross){
+        if(projectile.getType() == Projectile.ProjectileType.cross){
             run(SKAction.sequence([
                 SKAction.run({
                     self.debuffSpeed = 0.7
-                    if(player.xScale < 0){
-                        player.physicsBody?.velocity = CGVector(dx: -300 * self.debuffSpeed, dy: 0)
-                    } else {
-                        player.physicsBody?.velocity = CGVector(dx: 300 * self.debuffSpeed, dy: 0)
-                    }
+                    player.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! * self.debuffSpeed, dy: 0)
                 }),
                 SKAction.wait(forDuration: 3),
                 SKAction.run({self.debuffSpeed = 1.0
-                    if(player.xScale < 0){
-                        player.physicsBody?.velocity = CGVector(dx: -300 * self.debuffSpeed, dy: 0)
+                    if( (player.physicsBody?.velocity.dx)! == 0.0){
+                        player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                     } else {
-                        player.physicsBody?.velocity = CGVector(dx: 300 * self.debuffSpeed, dy: 0)
+                        player.physicsBody?.velocity = CGVector(dx: self.baseSpeed * player.xScale, dy: 0)
                     }
+                    
                 })
             ]))
         }
-        if(projectile.getArrow() == Projectile.ProjectileType.holywater){
+        if(projectile.getType() == Projectile.ProjectileType.holywater){
             run(SKAction.sequence([
                 SKAction.run({self.debuffSpeed = 0.0
                     player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)}),
@@ -225,10 +233,11 @@ class GameScene: SKScene {
         }
         print("Hit")
         projectile.removeFromParent()
-        if let child = childNode(withName: "heart."+String(lives-1)) {
+        if let child = childNode(withName: "heart."+String(lives)) {
             child.removeFromParent()
             let h = SKSpriteNode(imageNamed: "empty")
-            h.position = CGPoint(x: size.width - CGFloat((lives-1)*40+30), y: size.height * 0.90)
+            h.name = "empty."+String(lives)
+            h.position = CGPoint(x: size.width - CGFloat((lives)*40+30), y: size.height * 0.90)
             h.zPosition = Layer.ui.rawValue
             addChild(h)
             lives -= 1
@@ -250,7 +259,6 @@ class GameScene: SKScene {
     
     func getTopMostViewController() -> UIViewController? {
         var topMostViewController = UIApplication.shared.keyWindow?.rootViewController
-
         while let presentedViewController = topMostViewController?.presentedViewController {
             topMostViewController = presentedViewController
         }
@@ -277,10 +285,10 @@ class GameScene: SKScene {
             // Movement area check
             if (loc.x > size.width * 0.5) {
                 player.xScale = abs(player.xScale)
-                player.physicsBody?.velocity = CGVector(dx: 300 * debuffSpeed, dy: 0)
+                player.physicsBody?.velocity = CGVector(dx: baseSpeed * debuffSpeed, dy: 0)
             } else {
                 player.xScale = abs(player.xScale) * -1
-                player.physicsBody?.velocity = CGVector(dx: -300 * debuffSpeed, dy: 0)
+                player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
             }
         }
     }
@@ -289,8 +297,8 @@ class GameScene: SKScene {
     }
     private func changeDiff(){
         self.stage += 1
-        self.scalingFactor = pow(0.8, CGFloat(self.stage))
-        self.dropSpeed = ((0.05 * baseSpeed * CGFloat(self.stage))).rounded()
+        self.scalingFactor = pow(0.9, CGFloat(self.stage))
+        self.dropSpeed = ((0.06 * baseSpeed * CGFloat(self.stage))).rounded()
         changeBackground()
     }
 }

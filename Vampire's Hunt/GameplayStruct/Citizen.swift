@@ -25,7 +25,9 @@ class Citizen: SKSpriteNode {
     enum CitizenAnimationType: String{
         case walk
     }
-    
+    func getType() -> CitizenType{
+        return self.citizenType
+    }
     init(citizenType: CitizenType){
         var texture: SKTexture!
         self.citizenType = citizenType

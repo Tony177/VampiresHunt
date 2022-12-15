@@ -14,7 +14,8 @@ struct MainView: View {
         let scene = GameScene()
         scene.size = CGSize(width: 256, height: 256)
         scene.scaleMode = .resizeFill
-        let reveal = SKTransition.reveal(with: .down,duration: 1)
+        scene.view?.showsPhysics = true
+        let reveal = SKTransition.reveal(with: .down,duration: 1000)
         scene.view?.presentScene(scene, transition: reveal)
         return scene
     }
@@ -25,7 +26,7 @@ struct MainView: View {
         ZStack{
             Image("TitleScreen").resizable().frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
             VStack{
-                Image(isStartGame ? "PremutoStart" : "StartButton")
+                Image(isStartGame ? "StartPressed" : "StartButton")
                 Spacer().frame(height: 50)
             }.onTapGesture {
                 isStartGame.toggle()
@@ -33,6 +34,7 @@ struct MainView: View {
                 SpriteView(scene: self.scene)
                     .ignoresSafeArea()
                     .previewInterfaceOrientation(.landscapeRight)
+                    
             }
         }
     }
