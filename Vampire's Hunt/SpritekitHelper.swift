@@ -74,28 +74,30 @@ func random(min: CGFloat, max: CGFloat) -> CGFloat {
 }
 
 func weightedRandomCitizen(phase : Int) -> Citizen.CitizenType{
-    if (phase >= pC1.count) {
-        return Citizen.CitizenType.virgin
+    var idx : Int = phase
+    if (phase > pC1.count) {
+        idx = pC1.endIndex-1
     }
     let random : CGFloat = CGFloat.random(in: 0...1)
     switch random {
-    case 0..<pC1[phase]:
+    case 0..<pC1[idx]:
         return Citizen.CitizenType.citizen1
-    case pC1[phase]..<pC1[phase]+pC2[phase]:
+    case pC1[idx]..<pC1[idx]+pC2[idx]:
         return Citizen.CitizenType.citizen2
     default:
         return Citizen.CitizenType.virgin
     }
 }
 func weightedRandomProjectile(phase: Int) -> Projectile.ProjectileType{
-    if (phase >= ArC1.count) {
-        return Projectile.ProjectileType.arrow
+    var idx : Int = phase
+    if (phase > pC1.count) {
+        idx = pC1.endIndex-1
     }
     let random : CGFloat = CGFloat.random(in: 0...1)
     switch random {
-    case 0..<ArC1[phase]:
+    case 0..<ArC1[idx]:
         return Projectile.ProjectileType.arrow
-    case ArC1[phase]..<ArC1[phase]+ArC2[phase]:
+    case ArC1[idx]..<ArC1[idx]+ArC2[idx]:
         return Projectile.ProjectileType.cross
     default:
         return Projectile.ProjectileType.holywater

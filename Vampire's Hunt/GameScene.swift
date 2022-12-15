@@ -26,7 +26,6 @@ class GameScene: SKScene {
     private var playerNameIns: UITextField!
     
     override func didMove(to view: SKView) {
-        
         audioEngine.mainMixerNode.outputVolume = 0.0
         musicAudioNode.autoplayLooped = true
         musicAudioNode.isPositional = false
@@ -83,12 +82,12 @@ class GameScene: SKScene {
     }
     
     private func spawnProjectile() {
-        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage))
+        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage-1))
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
         setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player,yCenter: -20.0 - ((projectile.getType() == .holywater) ? 10 : 0))
         projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
         projectile.physicsBody?.usesPreciseCollisionDetection = true
-        projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
+        projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 - dropSpeed)
         addChild(projectile)
     }
     
@@ -115,7 +114,7 @@ class GameScene: SKScene {
     func spawnMultipleCitizen(){
         let wait = SKAction.wait(forDuration: TimeInterval(1), withRange: TimeInterval(0.25))
         let spawn = SKAction.run {
-            let type = weightedRandomCitizen(phase: self.stage)
+            let type = weightedRandomCitizen(phase: self.stage-1)
             self.spawnCitizen(citizenType: type)
         }
         let sequence = SKAction.sequence([wait, spawn])
@@ -186,6 +185,9 @@ class GameScene: SKScene {
         addChild(scorevalue)
     }
     func citizenDidCollideWithPlayer(citizen: Citizen){
+        if(lives == 0){
+            return
+        }
         print("Point")
         if (citizen.getType() == .virgin) {
             if let child = childNode(withName: "empty."+String(lives+1)) {
@@ -246,10 +248,11 @@ class GameScene: SKScene {
         if(lives == 0) {
             let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
             player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
+            player.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.6){
                 self.removeAllChildren()
                 self.removeAllActions()
-                var alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
                 alert.addTextField(configurationHandler: { (textField) -> Void in
                     textField.placeholder = "Write here."
                 })
@@ -285,15 +288,17 @@ class GameScene: SKScene {
         scene?.view?.presentScene(newScene,transition: reveal)
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches{
-            let loc = touch.location(in: self)
-            // Movement area check
-            if (loc.x > size.width * 0.5) {
-                player.xScale = abs(player.xScale)
-                player.physicsBody?.velocity = CGVector(dx: baseSpeed * debuffSpeed, dy: 0)
-            } else {
-                player.xScale = abs(player.xScale) * -1
-                player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
+        if(lives != 0 ) {
+            for touch in touches{
+                let loc = touch.location(in: self)
+                // Movement area check
+                if (loc.x > size.width * 0.5) {
+                    player.xScale = abs(player.xScale)
+                    player.physicsBody?.velocity = CGVector(dx: baseSpeed * debuffSpeed, dy: 0)
+                } else {
+                    player.xScale = abs(player.xScale) * -1
+                    player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
+                }
             }
         }
     }
@@ -302,8 +307,8 @@ class GameScene: SKScene {
     }
     private func changeDiff(){
         self.stage += 1
-        self.scalingFactor = pow(0.9, CGFloat(self.stage))
-        self.dropSpeed = ((0.06 * baseSpeed * CGFloat(self.stage))).rounded()
+        self.scalingFactor = pow(0.87, CGFloat(self.stage))
+        self.dropSpeed = ((0.03 * baseSpeed * CGFloat(self.stage))).rounded()
         changeBackground()
     }
 }
