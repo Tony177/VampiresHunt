@@ -104,11 +104,11 @@ class GameScene: SKScene {
     func spawnCitizen(citizenType: Citizen.CitizenType){
         citizen = Citizen(citizenType: citizenType)
         setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
-        
         let randomX = random(min: size.width*0.05, max: size.width*0.95)
         citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
         addChild(citizen)
-        citizen.spawn(spawnTime: TimeInterval(1))
+        citizen.spawn(spawnTime: TimeInterval(0.75))
+        citizen.run(SKAction.sequence([SKAction.wait(forDuration: 1.5),SKAction.removeFromParent()]))
     }
     
     func spawnMultipleCitizen(){

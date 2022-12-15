@@ -12,10 +12,17 @@ class EndScene : SKScene {
     override func didMove(to view: SKView) {
         let leaderboard : Leaderboard = decodeLeaderboard(userDefaultsKey: "score")
         var i : Int = 1
+        let title = SKLabelNode()
+        title.position = CGPoint(x: size.width/2, y: size.height * (0.90 - CGFloat(i)*0.05))
+        title.text = "High Score!"
+        title.fontName = "CasaleTwo NBP"
+        title.fontSize = 30
+        addChild(title)
         for e in leaderboard.records{
             let element = SKLabelNode()
-            element.position = CGPoint(x: size.width/2, y: size.height * (0.90 - CGFloat(i)*0.05))
+            element.position = CGPoint(x: size.width/2, y: size.height * (0.80 - CGFloat(i)*0.05))
             element.text = String(i) + ". " + e.name + "   " + String(e.score)
+            element.fontName = "CasaleTwo NBP"
             element.fontSize = 20
             i+=1
             addChild(element)
