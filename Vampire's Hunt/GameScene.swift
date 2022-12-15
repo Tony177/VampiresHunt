@@ -25,8 +25,8 @@ class GameScene: SKScene {
     private var textField: UITextField!
     private var playerNameIns: UITextField!
     
-    
     override func didMove(to view: SKView) {
+        
         audioEngine.mainMixerNode.outputVolume = 0.0
         musicAudioNode.autoplayLooped = true
         musicAudioNode.isPositional = false
@@ -44,6 +44,7 @@ class GameScene: SKScene {
         addPlayer()
         startSpawn()
         changeLevel()
+        
     }
     private func changeBackground(){
         let background = SKSpriteNode(imageNamed: "background\(stage)")
@@ -107,7 +108,7 @@ class GameScene: SKScene {
             let type = weightedRandomCitizen(phase: self.stage)
             self.spawnCitizen(citizenType: type)
         }
-        let sequence = SKAction.sequence([wait, spawn, wait, SKAction.run(removeFromParent)])
+        let sequence = SKAction.sequence([wait, spawn])
         let repeatAction = SKAction.repeat(sequence, count: 10000)
         run(repeatAction, withKey: "citizen")
     }
@@ -133,6 +134,13 @@ class GameScene: SKScene {
     private func addPlayer() {
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
         setupPhysics(node: &player, categoryBitMask: PhysicsCategory.player, contactTestBitMask: PhysicsCategory.arrow)
+        player.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: player.size.width, height: player.size.height * 0.8), center: CGPoint(x: 0.0, y: player.size.height * 0.7))
+        player.physicsBody?.affectedByGravity = false
+        player.physicsBody?.isDynamic = true
+        player.physicsBody?.categoryBitMask = PhysicsCategory.player
+        player.physicsBody?.contactTestBitMask = PhysicsCategory.arrow
+        player.physicsBody?.collisionBitMask = PhysicsCategory.none
+        player.physicsBody?.usesPreciseCollisionDetection = true
         player.constraints = [SKConstraint.distance(SKRange(lowerLimit: -size.width*0.45,upperLimit: size.width*0.45), to: CGPoint(x: size.width/2, y: size.height*0.05))]
         addChild(player)
         player.walk()
@@ -143,6 +151,7 @@ class GameScene: SKScene {
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
         setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player)
         projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
+        projectile.physicsBody?.usesPreciseCollisionDetection = true
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
         addChild(projectile)
     }
@@ -197,7 +206,13 @@ class GameScene: SKScene {
                     }
                 }),
                 SKAction.wait(forDuration: 3),
-                SKAction.run({self.debuffSpeed = 1.0})
+                SKAction.run({self.debuffSpeed = 1.0
+                    if(player.xScale < 0){
+                        player.physicsBody?.velocity = CGVector(dx: -300 * self.debuffSpeed, dy: 0)
+                    } else {
+                        player.physicsBody?.velocity = CGVector(dx: 300 * self.debuffSpeed, dy: 0)
+                    }
+                })
             ]))
         }
         if(projectile.getArrow() == Projectile.ProjectileType.holywater){
@@ -220,12 +235,12 @@ class GameScene: SKScene {
         }
         if(lives == 0) {
             /*var alert = UIAlertController(title: "Player name", message: "Enter your name", preferredStyle: .alert)
-            alert.addTextField(configurationHandler: { (textField) -> Void in
-                textField.text = "Choose your name."
-            })
-            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) -> Void in
-                self.playerNameIns = alert.textFields![0] as UITextField
-            }))*/
+             alert.addTextField(configurationHandler: { (textField) -> Void in
+             textField.text = "Choose your name."
+             })
+             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) -> Void in
+             self.playerNameIns = alert.textFields![0] as UITextField
+             }))*/
             resetMatch(playerName: "Nanashi")
         }
     }
@@ -245,15 +260,15 @@ class GameScene: SKScene {
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches{
-                let loc = touch.location(in: self)
-                // Movement area check
-                if (loc.x > size.width * 0.5) {
-                    player.xScale = abs(player.xScale)
-                    player.physicsBody?.velocity = CGVector(dx: 300 * debuffSpeed, dy: 0)
-                } else {
-                    player.xScale = abs(player.xScale) * -1
-                    player.physicsBody?.velocity = CGVector(dx: -300 * debuffSpeed, dy: 0)
-                }
+            let loc = touch.location(in: self)
+            // Movement area check
+            if (loc.x > size.width * 0.5) {
+                player.xScale = abs(player.xScale)
+                player.physicsBody?.velocity = CGVector(dx: 300 * debuffSpeed, dy: 0)
+            } else {
+                player.xScale = abs(player.xScale) * -1
+                player.physicsBody?.velocity = CGVector(dx: -300 * debuffSpeed, dy: 0)
+            }
         }
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -284,9 +299,9 @@ extension GameScene : SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.arrow != 0)) {
             if let player = firstBody.node as? Player,
                let projectile = secondBody.node as? Projectile {
-                projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
                 run(arrowAudioNode)
+                projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 return
             }
         }
@@ -294,9 +309,9 @@ extension GameScene : SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let citizen = secondBody.node as? Citizen {
-                citizenDidCollideWithPlayer(citizen: citizen)
                 let bitAudioNode = SKAction.playSoundFileNamed("BiteBloodPickup.mp3", waitForCompletion: false)
                 run(bitAudioNode)
+                citizenDidCollideWithPlayer(citizen: citizen)
                 return
             }
         }
