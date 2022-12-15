@@ -234,15 +234,28 @@ class GameScene: SKScene {
             lives -= 1
         }
         if(lives == 0) {
-            /*var alert = UIAlertController(title: "Player name", message: "Enter your name", preferredStyle: .alert)
-             alert.addTextField(configurationHandler: { (textField) -> Void in
-             textField.text = "Choose your name."
-             })
-             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) -> Void in
-             self.playerNameIns = alert.textFields![0] as UITextField
-             }))*/
-            resetMatch(playerName: "Nanashi")
+            removeAllChildren()
+            removeAllActions()
+            var alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
+            alert.addTextField(configurationHandler: { (textField) -> Void in
+                textField.placeholder = "Write here."
+            })
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+                let textField = alert.textFields![0] as UITextField
+                self.resetMatch(playerName: textField.text!)
+            }))
+            getTopMostViewController()?.present(alert, animated: true)
         }
+    }
+    
+    func getTopMostViewController() -> UIViewController? {
+        var topMostViewController = UIApplication.shared.keyWindow?.rootViewController
+
+        while let presentedViewController = topMostViewController?.presentedViewController {
+            topMostViewController = presentedViewController
+        }
+
+        return topMostViewController
     }
     
     func resetMatch(playerName: String) {
@@ -300,7 +313,9 @@ extension GameScene : SKPhysicsContactDelegate {
             if let player = firstBody.node as? Player,
                let projectile = secondBody.node as? Projectile {
                 let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
-                run(arrowAudioNode)
+                let changeVolumeAction = SKAction.changeVolume(to: 0.3, duration: 0.3)
+                let effectAudioGroup = SKAction.group([arrowAudioNode,changeVolumeAction])
+                run(effectAudioGroup)
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 return
             }
