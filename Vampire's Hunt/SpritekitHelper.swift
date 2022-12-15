@@ -11,6 +11,9 @@ import SpriteKit
 private let pC1 : [CGFloat] = [0.9,0.85,0.8,0.7,0.65,0.6,0.55,0.50,0.4,0.35,0.3]
 private let pC2 : [CGFloat] = [0.1,0.15,0.2,0.25,0.3,0.25,0.3,0.3,0.4,0.45,0.45]
 private let pC3 : [CGFloat] = [0.0,0.0,0.0,0.05,0.1,0.15,0.15,0.2,0.2,0.2,0.25]
+private let ArC1 : [CGFloat] = [1.0,0.95,0.9,0.85,0.85,0.8,0.8,0.75,0.7,0.7,0.65]
+private let ArC2 : [CGFloat] = [0.0,0.05,0.1,0.15,0.15,0.15,0.15,0.2,0.2,0.2,0.25]
+private let ArC3 : [CGFloat] = [0.0,0.0,0.0,0.0,0.0,0.05,0.05,0.05,0.1,0.1,0.1]
 
 enum Layer: CGFloat{
     case background
@@ -85,14 +88,14 @@ func weightedRandomCitizen(phase : Int) -> Citizen.CitizenType{
     }
 }
 func weightedRandomProjectile(phase: Int) -> Projectile.ProjectileType{
-    if (phase >= pC1.count) {
+    if (phase >= ArC1.count) {
         return Projectile.ProjectileType.arrow
     }
     let random : CGFloat = CGFloat.random(in: 0...1)
     switch random {
-    case 0..<pC1[phase]:
+    case 0..<ArC1[phase]:
         return Projectile.ProjectileType.arrow
-    case pC1[phase]..<pC1[phase]+pC2[phase]:
+    case ArC1[phase]..<ArC1[phase]+ArC2[phase]:
         return Projectile.ProjectileType.cross
     default:
         return Projectile.ProjectileType.holywater

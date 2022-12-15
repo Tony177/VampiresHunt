@@ -1,11 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "dracula_icon.png",
+      "filename" : "VampireDying7.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "VampireDying7 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

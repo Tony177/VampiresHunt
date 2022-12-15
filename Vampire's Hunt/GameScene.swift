@@ -82,6 +82,16 @@ class GameScene: SKScene {
         spawnMultipleCitizen()
     }
     
+    private func spawnProjectile() {
+        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage))
+        let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
+        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player,yCenter: -20.0 - ((projectile.getType() == .holywater) ? 10 : 0))
+        projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
+        projectile.physicsBody?.usesPreciseCollisionDetection = true
+        projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
+        addChild(projectile)
+    }
+    
     func spawnMultipleProjectile(){
         let wait = SKAction.wait(forDuration: 1.0 * scalingFactor , withRange: 1.5 * scalingFactor)
         let spawn = SKAction.run {
@@ -146,16 +156,6 @@ class GameScene: SKScene {
         player.walk()
     }
     
-    private func spawnProjectile() {
-        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage))
-        let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
-        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player,yCenter: -20.0 - ((projectile.getType() == .holywater) ? 10 : 0))
-        projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
-        projectile.physicsBody?.usesPreciseCollisionDetection = true
-        projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 + dropSpeed)
-        addChild(projectile)
-    }
-    
     private func addMenu(){
         let menu = SKShapeNode(rect: CGRect(x: 0, y: size.height*0.85, width: size.width, height: size.height*0.85))
         menu.strokeColor = .black
@@ -205,6 +205,7 @@ class GameScene: SKScene {
         citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(citizen.removeFromParent)]))
         self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
     }
+    
     func projectileDidCollideWithPlayer(projectile: Projectile, player: Player) {
         if(projectile.getType() == Projectile.ProjectileType.cross){
             run(SKAction.sequence([
@@ -243,17 +244,21 @@ class GameScene: SKScene {
             lives -= 1
         }
         if(lives == 0) {
-            removeAllChildren()
-            removeAllActions()
-            var alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
-            alert.addTextField(configurationHandler: { (textField) -> Void in
-                textField.placeholder = "Write here."
-            })
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-                let textField = alert.textFields![0] as UITextField
-                self.resetMatch(playerName: textField.text!)
-            }))
-            getTopMostViewController()?.present(alert, animated: true)
+            let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
+            player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.6){
+                self.removeAllChildren()
+                self.removeAllActions()
+                var alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (textField) -> Void in
+                    textField.placeholder = "Write here."
+                })
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+                    let textField = alert.textFields![0] as UITextField
+                    self.resetMatch(playerName: textField.text!)
+                }))
+                self.getTopMostViewController()?.present(alert, animated: true)
+            }
         }
     }
     
