@@ -22,6 +22,8 @@ class GameScene: SKScene {
     private var dropSpeed : CGFloat = 0.0
     private var scalingFactor : CGFloat = 0.75
     private var debuffSpeed : CGFloat = 1.0
+    private var textField: UITextField!
+    private var playerNameIns: UITextField!
     
     
     override func didMove(to view: SKView) {
@@ -113,8 +115,9 @@ class GameScene: SKScene {
     private func setClock() {
         let clockLabel = SKLabelNode()
         let dateFormatter = DateComponentsFormatter()
+        let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 26)!]
         clockLabel.name = "clock"
-        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
+        clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: attributes)
         clockLabel.zPosition = Layer.ui.rawValue
         clockLabel.position = CGPoint(x: size.width*0.1, y: size.height*0.9)
         addChild(clockLabel)
@@ -122,7 +125,7 @@ class GameScene: SKScene {
             SKAction.sequence([
                 SKAction.wait(forDuration: 1),
                 SKAction.run {self.clock += 1
-                    clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
+                    clockLabel.attributedText = NSAttributedString(string: dateFormatter.string(from: self.clock)!, attributes: attributes)
                 }
             ])
         ))
@@ -165,7 +168,8 @@ class GameScene: SKScene {
         scoreicon.zPosition = Layer.ui.rawValue
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
-        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
+        let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 26)!]
+        scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
         scorevalue.position = CGPoint(x: size.width*0.5, y: size.height*0.81+scorevalue.fontSize)
         scorevalue.zPosition = Layer.ui.rawValue
         scorevalue.name = "scorevalue"
@@ -177,8 +181,9 @@ class GameScene: SKScene {
         let bitesTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireBite", startsAt: 1, stopAt: 3)
         player.startAnimation(texture: bitesTexture, speed: 0.15, name: "bite", count: 1, resize: true, restore: true)
         blood += citizen.getCoinValue()
+        let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 26)!]
         citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(citizen.removeFromParent)]))
-        self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: [.font: UIFont(name: "CasaleTwo NBP", size: 26)!])
+        self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
     }
     func projectileDidCollideWithPlayer(projectile: Projectile, player: Player) {
         if(projectile.getArrow() == Projectile.ProjectileType.cross){
@@ -214,15 +219,22 @@ class GameScene: SKScene {
             lives -= 1
         }
         if(lives == 0) {
-            resetMatch()
+            /*var alert = UIAlertController(title: "Player name", message: "Enter your name", preferredStyle: .alert)
+            alert.addTextField(configurationHandler: { (textField) -> Void in
+                textField.text = "Choose your name."
+            })
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) -> Void in
+                self.playerNameIns = alert.textFields![0] as UITextField
+            }))*/
+            resetMatch(playerName: "Nanashi")
         }
     }
     
-    func resetMatch() {
+    func resetMatch(playerName: String) {
         print("Dead")
         removeAllChildren()
         let leaderboard = decodeLeaderboard(userDefaultsKey: "score")
-        let leaderboardChanged = leaderboard.copyAddRecord(record: Record(name: "You", score: blood))
+        let leaderboardChanged = leaderboard.copyAddRecord(record: Record(name: playerName , score: blood))
         encodeLeaderboard(userDefaultsKey: "score",leaderboard:leaderboardChanged)
         let reveal = SKTransition.reveal(with: .down,duration: 1)
         let newScene = EndScene()
