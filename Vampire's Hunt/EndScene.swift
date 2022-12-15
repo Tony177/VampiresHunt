@@ -21,7 +21,7 @@ class EndScene : SKScene {
             addChild(element)
         }
         let restartButton = SKSpriteNode(imageNamed: "RetryButton")
-        restartButton.position = CGPoint(x: size.width/4, y: size.height*0.5)
+        restartButton.position = CGPoint(x: size.width/2, y: size.height*0.2)
         restartButton.name = "restart"
         addChild(restartButton)
         
@@ -32,14 +32,17 @@ class EndScene : SKScene {
             let touchPointName = atPoint(loc).name
             if touchPointName == "restart"{
                 removeAllChildren()
-                let reveal = SKTransition.reveal(with: .down,
-                                                 duration: 1)
-                let newScene = GameScene()
-                newScene.size = CGSize(width: 256, height: 256)
-                newScene.scaleMode = .resizeFill
-                
-                scene?.view?.presentScene(newScene,
-                                          transition: reveal)
+                let Button = SKSpriteNode(imageNamed: "PremutoRetry")
+                Button.position = CGPoint(x: size.width/2, y: size.height*0.2)
+                Button.name = "restart"
+                addChild(Button)
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    let reveal = SKTransition.reveal(with: .down, duration: 1)
+                    let newScene = GameScene()
+                    newScene.size = CGSize(width: 256, height: 256)
+                    newScene.scaleMode = .resizeFill
+                    self.scene?.view?.presentScene(newScene, transition: reveal)
+                }
             }
             
         }

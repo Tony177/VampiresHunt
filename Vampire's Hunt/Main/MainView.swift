@@ -25,16 +25,14 @@ struct MainView: View {
         ZStack{
             Image("TitleScreen").resizable().frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
             VStack{
-                Button {
-                    isStartGame.toggle()
-                } label: {
-                    Image("StartButton")
-                }.fullScreenCover(isPresented: $isStartGame) {
-                    SpriteView(scene: self.scene)
-                        .ignoresSafeArea()
-                        .previewInterfaceOrientation(.landscapeRight)
-                }
+                Image(isStartGame ? "PremutoStart" : "StartButton")
                 Spacer().frame(height: 50)
+            }.onTapGesture {
+                isStartGame.toggle()
+            }.fullScreenCover(isPresented: $isStartGame) {
+                SpriteView(scene: self.scene)
+                    .ignoresSafeArea()
+                    .previewInterfaceOrientation(.landscapeRight)
             }
         }
     }
