@@ -19,11 +19,13 @@ class GameScene: SKScene {
     private var clock : TimeInterval = 0.0
     private var coinvalue : SKLabelNode?
     private var citizen = Citizen(citizenType: Citizen.CitizenType.citizen1)
+    private var collectible = Collectible(collectiblesType: Collectible.CollectibleType.wolf)
     private var dropSpeed : CGFloat = 0.0
     private var scalingFactor : CGFloat = 0.75
     private var debuffSpeed : CGFloat = 1.0
     private var textField: UITextField!
     private var playerNameIns: UITextField!
+    
     
     override func didMove(to view: SKView) {
         audioEngine.mainMixerNode.outputVolume = 0.0
@@ -55,7 +57,6 @@ class GameScene: SKScene {
     }
     private func changeLevel(){
         if(stage < 11){ // Last stage
-            //MARK: remove spawned citizen
             run(SKAction.sequence([
                 SKAction.wait(forDuration: 10),
                 SKAction.run {
@@ -79,14 +80,20 @@ class GameScene: SKScene {
     private func startSpawn(){
         spawnMultipleProjectile()
         spawnMultipleCitizen()
+        spawnMultipleWolf()
     }
     
     private func spawnProjectile() {
-        var projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage-1))
+        let projectile = Projectile(projectileType: weightedRandomProjectile(phase: stage-1))
         let actualX = random(min: size.width * 0.05, max: size.width * 0.95)
-        setupPhysics(node: &projectile, categoryBitMask: PhysicsCategory.arrow, contactTestBitMask: PhysicsCategory.player,yCenter: -20.0 - ((projectile.getType() == .holywater) ? 10 : 0))
         projectile.position = CGPoint(x: actualX, y: size.height + projectile.size.height)
-        projectile.physicsBody?.usesPreciseCollisionDetection = true
+        projectile.physicsBody = SKPhysicsBody(texture: projectile.texture!, size: projectile.size)
+        projectile.physicsBody?.affectedByGravity = false
+        projectile.physicsBody?.isDynamic = true
+        projectile.physicsBody?.categoryBitMask = PhysicsCategory.arrow
+        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.player
+        projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
+        //projectile.physicsBody?.usesPreciseCollisionDetection = true
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 - dropSpeed)
         addChild(projectile)
     }
@@ -101,6 +108,26 @@ class GameScene: SKScene {
         run(repeatAction, withKey: "projectile")
     }
     
+    func spawnWolf(citizenType: Citizen.CitizenType){
+        citizen = Citizen(citizenType: citizenType)
+        setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
+        let randomX = random(min: size.width*0.05, max: size.width*0.95)
+        citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
+        addChild(citizen)
+        citizen.spawn(spawnTime: TimeInterval(0.75))
+        citizen.run(SKAction.sequence([SKAction.wait(forDuration: 3.5),SKAction.fadeOut(withDuration: 0.3), SKAction.removeFromParent()]))
+    }
+    
+    func spawnMultipleWolf(){
+        let wait = SKAction.wait(forDuration: TimeInterval(10), withRange: TimeInterval(2))
+        let spawn = SKAction.run {
+            self.spawnCitizen(citizenType: Citizen.CitizenType.wolf)
+        }
+        let sequence = SKAction.sequence([wait, spawn])
+        let repeatAction = SKAction.repeat(sequence, count: 10000)
+        run(repeatAction, withKey: "wolf")
+    }
+    
     func spawnCitizen(citizenType: Citizen.CitizenType){
         citizen = Citizen(citizenType: citizenType)
         setupPhysics(node: &citizen, categoryBitMask: PhysicsCategory.citizen, contactTestBitMask: PhysicsCategory.player)
@@ -108,7 +135,7 @@ class GameScene: SKScene {
         citizen.position = CGPoint(x: randomX, y: size.height * 0.15)
         addChild(citizen)
         citizen.spawn(spawnTime: TimeInterval(0.75))
-        citizen.run(SKAction.sequence([SKAction.wait(forDuration: 1.5),SKAction.removeFromParent()]))
+        citizen.run(SKAction.sequence([SKAction.wait(forDuration: 2.5),SKAction.fadeOut(withDuration: 0.3), SKAction.removeFromParent()]))
     }
     
     func spawnMultipleCitizen(){
@@ -141,16 +168,14 @@ class GameScene: SKScene {
         ))
     }
     private func addPlayer() {
-        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
         setupPhysics(node: &player, categoryBitMask: PhysicsCategory.player, contactTestBitMask: PhysicsCategory.arrow)
-        player.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: player.size.width, height: player.size.height * 0.8), center: CGPoint(x: 0.0, y: player.size.height * 0.7))
+        player.constraints = [SKConstraint.distance(SKRange(lowerLimit: -size.width*0.45,upperLimit: size.width*0.45), to: CGPoint(x: size.width/2, y: size.height*0.15))]
+        player.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: player.size.width*0.9, height: player.size.height*0.9),center: CGPoint(x: 0.0, y: -5))
         player.physicsBody?.affectedByGravity = false
         player.physicsBody?.isDynamic = true
         player.physicsBody?.categoryBitMask = PhysicsCategory.player
         player.physicsBody?.contactTestBitMask = PhysicsCategory.arrow
         player.physicsBody?.collisionBitMask = PhysicsCategory.none
-        player.physicsBody?.usesPreciseCollisionDetection = true
-        player.constraints = [SKConstraint.distance(SKRange(lowerLimit: -size.width*0.45,upperLimit: size.width*0.45), to: CGPoint(x: size.width/2, y: size.height*0.05))]
         addChild(player)
         player.walk()
     }
@@ -184,7 +209,7 @@ class GameScene: SKScene {
         self.coinvalue = scorevalue
         addChild(scorevalue)
     }
-    func citizenDidCollideWithPlayer(citizen: Citizen){
+    func citizenDidCollideWithPlayer(citizen: Citizen, player: Player){
         if(lives == 0){
             return
         }
@@ -199,6 +224,23 @@ class GameScene: SKScene {
                 h.zPosition = Layer.ui.rawValue
                 addChild(h)
             }
+        }
+        if(citizen.getType() == Citizen.CitizenType.wolf){
+            run(SKAction.sequence([
+                SKAction.run({
+                    self.debuffSpeed = 1.5
+                    player.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! * self.debuffSpeed, dy: 0)
+                }),
+                SKAction.wait(forDuration: 3),
+                SKAction.run({self.debuffSpeed = 1.0
+                    if( (player.physicsBody?.velocity.dx)! == 0.0){
+                        player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                    } else {
+                        player.physicsBody?.velocity = CGVector(dx: self.baseSpeed * player.xScale, dy: 0)
+                    }
+                    
+                })
+            ]))
         }
         let bitesTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireBite", startsAt: 1, stopAt: 3)
         player.startAnimation(texture: bitesTexture, speed: 0.15, name: "bite", count: 1, resize: true, restore: true)
@@ -287,6 +329,7 @@ class GameScene: SKScene {
         
         scene?.view?.presentScene(newScene,transition: reveal)
     }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if(lives != 0 ) {
             for touch in touches{
@@ -299,16 +342,18 @@ class GameScene: SKScene {
                     player.xScale = abs(player.xScale) * -1
                     player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
                 }
-            }
+           }
         }
     }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
     }
+    
     private func changeDiff(){
         self.stage += 1
-        self.scalingFactor = pow(0.87, CGFloat(self.stage))
-        self.dropSpeed = ((0.03 * baseSpeed * CGFloat(self.stage))).rounded()
+        self.scalingFactor = pow(0.89, CGFloat(self.stage))
+        self.dropSpeed = ((0.05 * baseSpeed * CGFloat(self.stage))).rounded()
         changeBackground()
     }
 }
@@ -331,7 +376,7 @@ extension GameScene : SKPhysicsContactDelegate {
             if let player = firstBody.node as? Player,
                let projectile = secondBody.node as? Projectile {
                 let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
-                let changeVolumeAction = SKAction.changeVolume(to: 0.3, duration: 0.3)
+                let changeVolumeAction = SKAction.changeVolume(to: 1.0, duration: 0.5)
                 let effectAudioGroup = SKAction.group([arrowAudioNode,changeVolumeAction])
                 run(effectAudioGroup)
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
@@ -342,9 +387,10 @@ extension GameScene : SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let citizen = secondBody.node as? Citizen {
+                let player = firstBody.node as? Player
                 let bitAudioNode = SKAction.playSoundFileNamed("BiteBloodPickup.mp3", waitForCompletion: false)
                 run(bitAudioNode)
-                citizenDidCollideWithPlayer(citizen: citizen)
+                citizenDidCollideWithPlayer(citizen: citizen, player: player!)
                 return
             }
         }

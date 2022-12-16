@@ -39,5 +39,3 @@ struct MainView: View {
         }
     }
 }
-
-

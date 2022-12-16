@@ -14,12 +14,14 @@ class Citizen: SKSpriteNode {
     private var walkTextures1: [SKTexture]?
     private var walkTextures2: [SKTexture]?
     private var walkTextures3: [SKTexture]?
+    private var walkTextures4: [SKTexture]?
     
     enum CitizenType: String {
         case none
         case citizen1
         case citizen2
         case virgin
+        case wolf
     }
     
     enum CitizenAnimationType: String{
@@ -38,6 +40,8 @@ class Citizen: SKSpriteNode {
             texture = SKTexture(imageNamed: "Citizen2-frame1")
         case .virgin:
             texture = SKTexture(imageNamed: "Virgin-frame1")
+        case .wolf:
+            texture = SKTexture(imageNamed: "Wolf1")
         case .none:
             break
         }
@@ -48,9 +52,12 @@ class Citizen: SKSpriteNode {
         }else if(self.citizenType == .citizen2){
             self.walkTextures2 = self.loadTexture(atlas: "Citizen", prefix: "Citizen2-frame", startsAt: 1, stopAt: 4)
             startAnimation(texture: walkTextures2!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
-        }else{
+        }else if(self.citizenType == .virgin){
             self.walkTextures3 = self.loadTexture(atlas: "Citizen", prefix: "Virgin-frame", startsAt: 1, stopAt: 4)
             startAnimation(texture: walkTextures3!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
+        }else{
+            self.walkTextures4 = self.loadTexture(atlas: "Citizen", prefix: "Wolf", startsAt: 1, stopAt: 3)
+            startAnimation(texture: walkTextures4!, speed: 0.25, name: CitizenAnimationType.walk.rawValue, count: 0, resize: true, restore: true)
         }
         self.name = "city_\(citizenType)"
         self.zPosition = Layer.citizen.rawValue
@@ -66,6 +73,8 @@ class Citizen: SKSpriteNode {
             return 10
         case .citizen2:
             return 25
+        case .wolf:
+            return 0
         default:
             return 75
         }

@@ -22,8 +22,7 @@ class Player: SKSpriteNode{
         self.walkTextures = self.loadTexture(atlas: "Vampire", prefix: "VampireWalk", startsAt: 1, stopAt: 3)
         self.name = "player"
         self.setScale(1.0)
-        self.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        self.position = CGPoint(x: size.width/2, y: size.height*0.05)
+        self.position = CGPoint(x: size.width/2, y: size.height*0.6)
         self.zPosition = Layer.player.rawValue       
     }
     

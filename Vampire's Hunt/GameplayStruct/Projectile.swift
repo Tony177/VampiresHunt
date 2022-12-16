@@ -1,5 +1,5 @@
 //
-//  Arrows.swift
+//  Projectile.swift
 //  Vampire's Hunt
 //
 //  Created by Nanshi on 12/12/22.
@@ -18,6 +18,7 @@ class Projectile: SKSpriteNode{
         case cross
         case holywater
     }
+    
     init(projectileType: ProjectileType) {
         var texture: SKTexture!
         self.projectileType = projectileType
@@ -25,7 +26,6 @@ class Projectile: SKSpriteNode{
             texture = SKTexture(imageNamed: self.projectileType.rawValue)
         }
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
-        self.anchorPoint = CGPoint(x: 0.5, y: 1.0)
         self.zPosition = Layer.arrow.rawValue
     }
     

@@ -8,18 +8,20 @@
 import Foundation
 import SpriteKit
 
-private let pC1 : [CGFloat] = [0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.55, 0.50, 0.4, 0.40, 0.35]
-private let pC2 : [CGFloat] = [0.1, 0.15, 0.2, 0.25, 0.3, 0.25, 0.3, 0.35, 0.45, 0.45, 0.45]
-private let pC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.05, 0.1, 0.15, 0.15, 0.15, 0.15, 0.15, 0.2]
-private let ArC1 : [CGFloat] = [1.0, 0.95, 0.9, 0.85, 0.85, 0.8, 0.8, 0.75, 0.7, 0.7, 0.65]
-private let ArC2 : [CGFloat] = [0.0, 0.05, 0.1, 0.15, 0.15, 0.15, 0.15, 0.2, 0.25, 0.2, 0.25]
-private let ArC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1]
+private let pC1 : [CGFloat] = [0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.6, 0.55, 0.47, 0.44, 0.4]
+private let pC2 : [CGFloat] = [0.1, 0.15, 0.2, 0.28, 0.32, 0.36, 0.35, 0.4, 0.47, 0.5, 0.53]
+private let pC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.02, 0.03, 0.04, 0.05, 0.05, 0.06, 0.06, 0.07]
+private let pCW : [CGFloat] = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+private let ArC1 : [CGFloat] = [1.0, 0.95, 0.9, 0.85, 0.85, 0.8, 0.8, 0.75, 0.7, 0.65, 0.55]
+private let ArC2 : [CGFloat] = [0.0, 0.05, 0.1, 0.15, 0.15, 0.15, 0.15, 0.2, 0.2, 0.2, 0.25]
+private let ArC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.05, 0.1, 0.15, 0.2]
 
 enum Layer: CGFloat{
     case background
     case player
     case arrow
     case citizen
+    case collectible
     case ui
 }
 
@@ -90,6 +92,23 @@ func weightedRandomCitizen(phase : Int) -> Citizen.CitizenType{
         return Citizen.CitizenType.virgin
     }
 }
+
+func weightedRandomWolf(phase : Int) -> Citizen.CitizenType{
+    var idx : Int = phase
+    if (phase > pC1.count) {
+        idx = pC1.endIndex-1
+    }
+    let random : CGFloat = CGFloat.random(in: 0...1)
+    switch random {
+    case 0..<pC1[idx]:
+        return Citizen.CitizenType.citizen1
+    case pC1[idx]..<pC1[idx]+pC2[idx]:
+        return Citizen.CitizenType.citizen2
+    default:
+        return Citizen.CitizenType.virgin
+    }
+}
+
 
 func weightedRandomProjectile(phase: Int) -> Projectile.ProjectileType{
     var idx : Int = phase
