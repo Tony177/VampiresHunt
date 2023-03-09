@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SpriteKit
-
+import GameKit
 struct MainView: View {
 
     var scene: SKScene {
@@ -29,13 +29,17 @@ struct MainView: View {
                 Image(isStartGame ? "StartPressed" : "StartButton")
                 Spacer().frame(height: 50)
             }.onTapGesture {
+                GKAccessPoint.shared.isActive = false
                 isStartGame.toggle()
             }.fullScreenCover(isPresented: $isStartGame) {
+                
                 SpriteView(scene: self.scene)
                     .ignoresSafeArea()
                     .previewInterfaceOrientation(.landscapeRight)
                     
             }
+        }.onAppear(){
+            GKAccessPoint.shared.isActive = true
         }
     }
 }

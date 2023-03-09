@@ -291,42 +291,25 @@ class GameScene: SKScene {
             let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
             player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
             player.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.6){
-                self.removeAllChildren()
-                self.removeAllActions()
-                let alert = UIAlertController(title: "Game Over", message: "Enter your nickname", preferredStyle: .alert)
-                alert.addTextField(configurationHandler: { (textField) -> Void in
-                    textField.placeholder = "Write here."
-                })
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-                    let textField = alert.textFields![0] as UITextField
-                    self.resetMatch(playerName: textField.text!)
-                }))
-                self.getTopMostViewController()?.present(alert, animated: true)
-            }
+            self.removeAllActions()
+            self.removeAllChildren()
+            resetMatch()
         }
     }
     
-    func getTopMostViewController() -> UIViewController? {
-        var topMostViewController = UIApplication.shared.keyWindow?.rootViewController
-        while let presentedViewController = topMostViewController?.presentedViewController {
-            topMostViewController = presentedViewController
-        }
-
-        return topMostViewController
-    }
-    
-    func resetMatch(playerName: String) {
+    func resetMatch() {
         print("Dead")
         removeAllChildren()
-        let leaderboard = decodeLeaderboard(userDefaultsKey: "score")
-        let leaderboardChanged = leaderboard.copyAddRecord(record: Record(name: playerName , score: blood))
-        encodeLeaderboard(userDefaultsKey: "score",leaderboard:leaderboardChanged)
+        GKLeaderboard.submitScore(blood, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhpoint"]) { error in
+            if let error { print(error.localizedDescription) }
+        }
+        GKLeaderboard.submitScore(Int(clock.rounded(.down)), context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhtime"]){ error in
+            if let error { print(error.localizedDescription) }
+        }
         let reveal = SKTransition.reveal(with: .down,duration: 1)
-        let newScene = EndScene()
+        let newScene = GameScene()
         newScene.size = CGSize(width: 256, height: 256)
         newScene.scaleMode = .resizeFill
-        
         scene?.view?.presentScene(newScene,transition: reveal)
     }
     
