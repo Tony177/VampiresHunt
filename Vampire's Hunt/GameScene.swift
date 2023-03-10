@@ -12,6 +12,8 @@ import GameKit
 class GameScene: SKScene {
     private let baseSpeed : CGFloat = 300
     private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
+    
+    private var hashFirstTouch : Int = 0
     private var player = Player()
     private var stage : Int = 1
     private var lives : Int = 3
@@ -28,6 +30,8 @@ class GameScene: SKScene {
     
     
     override func didMove(to view: SKView) {
+        self.view?.isMultipleTouchEnabled = true
+        self.view?.isExclusiveTouch = true
         audioEngine.mainMixerNode.outputVolume = 0.0
         musicAudioNode.autoplayLooped = true
         musicAudioNode.isPositional = false
@@ -213,7 +217,6 @@ class GameScene: SKScene {
         if(lives == 0){
             return
         }
-        print("Point")
         if (citizen.getType() == .virgin) {
             if let child = childNode(withName: "empty."+String(lives+1)) {
                 child.removeFromParent()
@@ -276,7 +279,6 @@ class GameScene: SKScene {
                 SKAction.run({self.debuffSpeed = 1.0})
             ]))
         }
-        print("Hit")
         projectile.removeFromParent()
         if let child = childNode(withName: "heart."+String(lives)) {
             child.removeFromParent()
@@ -298,7 +300,6 @@ class GameScene: SKScene {
     }
     
     func resetMatch() {
-        print("Dead")
         removeAllChildren()
         GKLeaderboard.submitScore(blood, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhpoint"]) { error in
             if let error { print(error.localizedDescription) }
@@ -316,6 +317,7 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if(lives != 0 ) {
             for touch in touches{
+                hashFirstTouch = touch.hashValue
                 let loc = touch.location(in: self)
                 // Movement area check
                 if (loc.x > size.width * 0.5) {
@@ -330,7 +332,12 @@ class GameScene: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+        for touch in touches {
+            if(touch.hashValue == hashFirstTouch){
+                player.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+            }
+        }
+        
     }
     
     private func changeDiff(){
