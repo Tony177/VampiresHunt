@@ -24,6 +24,8 @@ enum Layer: CGFloat{
     case citizen
     case collectible
     case ui
+    case backgroundPause
+    case resumePause
 }
 
 enum PhysicsCategory {

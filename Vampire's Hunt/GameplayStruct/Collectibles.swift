@@ -15,17 +15,17 @@ class Collectible: SKSpriteNode{
     enum CollectibleType: String{
         case none
         case wolf
-        case mist
+        case Mist
     }
     
     init(collectiblesType: CollectibleType) {
         var texture: SKTexture!
         self.collectiblesType = collectiblesType
         if (self.collectiblesType != .none) {
-            texture = SKTexture(imageNamed: self.collectiblesType.rawValue)
+            texture = SKTexture(imageNamed: "Wolf1")
         }
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
-        self.anchorPoint = CGPoint(x: 0.5, y: 1.0)
+        self.position = CGPoint(x: size.width/2, y: size.height*0.6)
         self.zPosition = Layer.collectible.rawValue
     }
     

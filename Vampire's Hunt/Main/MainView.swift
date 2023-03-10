@@ -14,7 +14,6 @@ struct MainView: View {
         let scene = GameScene()
         scene.size = CGSize(width: 256, height: 256)
         scene.scaleMode = .resizeFill
-        scene.view?.showsPhysics = true
         let reveal = SKTransition.reveal(with: .down,duration: 1000)
         scene.view?.presentScene(scene, transition: reveal)
         return scene

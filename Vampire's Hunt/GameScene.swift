@@ -54,9 +54,8 @@ class GameScene: SKScene {
     private func changeBackground(){
         let background = SKSpriteNode(imageNamed: "background\(stage)")
         background.name = "background"
-        background.anchorPoint = CGPoint(x: 0, y: 0)
         background.zPosition = Layer.background.rawValue
-        background.position = CGPoint(x: 0, y: 0)
+        background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         addChild(background)
     }
     private func changeLevel(){
@@ -97,7 +96,7 @@ class GameScene: SKScene {
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.arrow
         projectile.physicsBody?.contactTestBitMask = PhysicsCategory.player
         projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
-        //projectile.physicsBody?.usesPreciseCollisionDetection = true
+        projectile.physicsBody?.usesPreciseCollisionDetection = true
         projectile.physicsBody?.velocity = CGVector(dx: 0, dy: -350 - dropSpeed)
         addChild(projectile)
     }
@@ -194,24 +193,29 @@ class GameScene: SKScene {
                       SKSpriteNode(imageNamed: "heart"),
                       SKSpriteNode(imageNamed: "heart")]
         for i in hearts.indices{
-            hearts[i].position = CGPoint(x: size.width - CGFloat((i+1)*40+30), y: size.height * 0.90)
+            hearts[i].position = CGPoint(x: size.width - CGFloat((i+1)*40+160), y: size.height * 0.92)
             hearts[i].name = "heart."+String(i+1)
             hearts[i].zPosition = Layer.ui.rawValue
             addChild(hearts[i])
         }
         
         let scoreicon = SKSpriteNode(imageNamed: "blood")
-        scoreicon.position = CGPoint(x: size.width*0.45, y: size.height*0.84+scoreicon.size.height)
+        scoreicon.position = CGPoint(x: size.width*0.35, y: size.height*0.84+scoreicon.size.height)
         scoreicon.zPosition = Layer.ui.rawValue
         addChild(scoreicon)
         let scorevalue = SKLabelNode()
         let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 26)!]
         scorevalue.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
-        scorevalue.position = CGPoint(x: size.width*0.5, y: size.height*0.81+scorevalue.fontSize)
+        scorevalue.position = CGPoint(x: size.width*0.40, y: size.height*0.81+scorevalue.fontSize)
         scorevalue.zPosition = Layer.ui.rawValue
         scorevalue.name = "scorevalue"
         self.coinvalue = scorevalue
         addChild(scorevalue)
+        let pauseButton = SKSpriteNode(imageNamed: "blood")
+        pauseButton.name = "pauseButton"
+        pauseButton.position = CGPoint(x: size.width*0.9, y: size.height*0.85+pauseButton.size.height)
+        pauseButton.zPosition = Layer.ui.rawValue
+        addChild(pauseButton)
     }
     func citizenDidCollideWithPlayer(citizen: Citizen, player: Player){
         if(lives == 0){
@@ -223,7 +227,7 @@ class GameScene: SKScene {
                 lives += 1
                 let h = SKSpriteNode(imageNamed: "heart")
                 h.name = "heart."+String(lives)
-                h.position = CGPoint(x: size.width - CGFloat((lives)*40+30), y: size.height * 0.90)
+                h.position = CGPoint(x: size.width - CGFloat((lives)*40+160), y: size.height * 0.92)
                 h.zPosition = Layer.ui.rawValue
                 addChild(h)
             }
@@ -231,7 +235,7 @@ class GameScene: SKScene {
         if(citizen.getType() == Citizen.CitizenType.wolf){
             run(SKAction.sequence([
                 SKAction.run({
-                    self.debuffSpeed = 1.5
+                    self.debuffSpeed = 1.3
                     player.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! * self.debuffSpeed, dy: 0)
                 }),
                 SKAction.wait(forDuration: 3),
@@ -251,6 +255,8 @@ class GameScene: SKScene {
         let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 26)!]
         citizen.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.3),SKAction.run(citizen.removeFromParent)]))
         self.coinvalue?.attributedText = NSAttributedString(string: String(blood), attributes: attributes)
+        self.coinvalue?.position = CGPoint(x: size.width*0.40 + log10(CGFloat(blood+1))*4, y: size.height*0.81+self.coinvalue!.fontSize)
+        
     }
     
     func projectileDidCollideWithPlayer(projectile: Projectile, player: Player) {
@@ -284,7 +290,7 @@ class GameScene: SKScene {
             child.removeFromParent()
             let h = SKSpriteNode(imageNamed: "empty")
             h.name = "empty."+String(lives)
-            h.position = CGPoint(x: size.width - CGFloat((lives)*40+30), y: size.height * 0.90)
+            h.position = CGPoint(x: size.width - CGFloat((lives)*40+160), y: size.height * 0.92)
             h.zPosition = Layer.ui.rawValue
             addChild(h)
             lives -= 1
@@ -317,8 +323,13 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if(lives != 0 ) {
             for touch in touches{
-                hashFirstTouch = touch.hashValue
                 let loc = touch.location(in: self)
+                if(atPoint(loc).name == "pauseButton"){
+                    self.view?.presentScene(PauseScene())
+                    return
+                }
+                hashFirstTouch = touch.hashValue
+                
                 // Movement area check
                 if (loc.x > size.width * 0.5) {
                     player.xScale = abs(player.xScale)
