@@ -9,7 +9,7 @@ import SwiftUI
 import SpriteKit
 import GameKit
 struct MainView: View {
-
+    
     var scene: SKScene {
         let scene = GameScene()
         scene.size = CGSize(width: 256, height: 256)
@@ -22,23 +22,31 @@ struct MainView: View {
     @State var isStartGame = false
     
     var body: some View {
-        ZStack{
-            Image("TitleScreen").resizable().frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
-            VStack{
-                Image(isStartGame ? "StartPressed" : "StartButton")
-                Spacer().frame(height: 50)
-            }.onTapGesture {
-                GKAccessPoint.shared.isActive = false
-                isStartGame.toggle()
-            }.fullScreenCover(isPresented: $isStartGame) {
-                
-                SpriteView(scene: self.scene)
-                    .ignoresSafeArea()
-                    .previewInterfaceOrientation(.landscapeRight)
-                    
+        NavigationStack{
+            ZStack{
+                Image("TitleScreen").resizable().frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
+                VStack(spacing:15){
+                    NavigationLink {
+                        SpriteView(scene: self.scene)
+                            .ignoresSafeArea()
+                            .navigationBarBackButtonHidden(true)
+                    } label: {
+                        ZStack{
+                            Image("bgButton")
+                            Text(LocalizedStringKey("START")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.red)
+                        }
+                    }
+                    NavigationLink {
+                        EmptyView()
+                    } label: {
+                        ZStack{
+                            Image("bgButton")
+                            Text(LocalizedStringKey("SETTINGS")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.red)
+                        }
+                    }
+                }
             }
-        }.onAppear(){
-            GKAccessPoint.shared.isActive = true
         }
     }
 }
+

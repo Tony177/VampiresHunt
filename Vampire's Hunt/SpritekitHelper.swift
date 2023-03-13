@@ -16,7 +16,8 @@ private let ArC1 : [CGFloat] = [1.0, 0.95, 0.9, 0.85, 0.85, 0.8, 0.8, 0.75, 0.7,
 private let ArC2 : [CGFloat] = [0.0, 0.05, 0.1, 0.15, 0.15, 0.15, 0.15, 0.2, 0.2, 0.2, 0.25]
 private let ArC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.05, 0.1, 0.15, 0.2]
 
-public var enabledGameCenter : Bool = false
+public var audioSFX : Float = 1.0
+public var audioMusic : Float = 1.0
 enum Layer: CGFloat{
     case background
     case player

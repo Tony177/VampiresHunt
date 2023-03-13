@@ -34,18 +34,15 @@ struct MainApp: App {
                 return
             }
             if error != nil {
-                enabledGameCenter = false
                 print(error ?? "Generic error authentication")
                 // Player could not be authenticated.
                 // Disable Game Center in the game.
                 return
             }
-            enabledGameCenter = true
             // Perform any other configurations as needed (for example, access point).
             
             GKAccessPoint.shared.location = .topLeading
             GKAccessPoint.shared.showHighlights = true
-            GKAccessPoint.shared.isActive = true
         }
     }
 }

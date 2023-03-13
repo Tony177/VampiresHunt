@@ -39,7 +39,7 @@ class GameScene: SKScene {
         musicAudioNode.run(SKAction.changeVolume(to: 0.0, duration: 0.0))
         run(SKAction.wait(forDuration: 1.0)) {
             [unowned self] in self.audioEngine.mainMixerNode.outputVolume = 1.0
-            self.musicAudioNode.run(SKAction.changeVolume(to: 0.75, duration: 2.0))
+            self.musicAudioNode.run(SKAction.changeVolume(to: audioMusic, duration: 2.0))
         }
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
