@@ -42,6 +42,8 @@ struct SettingsView: View {
         }.font(.custom("CasaleTwo NBP", size: 22))
         .padding()
             .onDisappear(){
+                UserDefaults.standard.set(audioSFXState, forKey: "audioSFX")
+                UserDefaults.standard.set(audioMusicState, forKey: "audioMusic")
                 audioSFX = audioSFXState
                 audioMusic = audioMusicState
             }

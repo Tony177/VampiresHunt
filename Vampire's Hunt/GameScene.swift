@@ -42,7 +42,6 @@ class GameScene: SKScene {
         addPlayer()
         startSpawn()
         changeLevel()
-        
     }
     private func setupAudio(){
         audioEngine.mainMixerNode.outputVolume = 0.0
@@ -86,6 +85,39 @@ class GameScene: SKScene {
             ]))
         }
         
+    }
+    private func pauseMenuToggle(){
+        if(isPaused){
+            removeChildren(in: [childNode(withName: "resumePause")!])
+            removeChildren(in: [childNode(withName: "quitPause")!])
+            removeChildren(in: [childNode(withName: "backgroundPause")!])
+            childNode(withName: "pauseButton")?.isHidden = false
+            player.isHidden = false
+            isPaused = false
+        } else {
+            let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 32)!]
+            let p1 = SKLabelNode()
+            p1.attributedText =  NSAttributedString(string: NSLocalizedString("RESUME", comment: "RESUME"),attributes: attributes)
+            p1.name = "resumePause"
+            p1.position = CGPoint(x: size.width/2, y: size.height/1.8)
+            p1.zPosition = Layer.buttonPause.rawValue
+            let p2 = SKLabelNode()
+            p2.attributedText =  NSAttributedString(string: NSLocalizedString("QUIT", comment: "QUIT"),attributes: attributes)
+            p2.name = "quitPause"
+            p2.position = CGPoint(x: size.width/2, y: size.height/2.7)
+            p2.zPosition = Layer.buttonPause.rawValue
+            let p3 = SKSpriteNode(imageNamed: "pauseBackground")
+            p3.name = "backgroundPause"
+            p3.size = CGSize(width: size.width/2, height: size.height/2)
+            p3.position = CGPoint(x: size.width/2, y: size.height/2)
+            p3.zPosition = Layer.backgroundPause.rawValue
+            childNode(withName: "pauseButton")?.isHidden = true
+            player.isHidden = true
+            isPaused = true
+            addChild(p1)
+            addChild(p2)
+            addChild(p3)
+        }
     }
     
     private func startSpawn(){
@@ -219,9 +251,9 @@ class GameScene: SKScene {
         scorevalue.name = "scorevalue"
         self.coinvalue = scorevalue
         addChild(scorevalue)
-        let pauseButton = SKSpriteNode(imageNamed: "blood")
+        let pauseButton = SKSpriteNode(imageNamed: "pauseButton")
         pauseButton.name = "pauseButton"
-        pauseButton.position = CGPoint(x: size.width*0.9, y: size.height*0.85+pauseButton.size.height)
+        pauseButton.position = CGPoint(x: size.width*0.93, y: size.height*0.85+pauseButton.size.height)
         pauseButton.zPosition = Layer.ui.rawValue
         addChild(pauseButton)
     }
@@ -307,14 +339,13 @@ class GameScene: SKScene {
             let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
             player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
             player.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
-            self.removeAllActions()
-            self.removeAllChildren()
             resetMatch()
         }
     }
     
     func resetMatch() {
         removeAllChildren()
+        removeAllActions()
         GKLeaderboard.submitScore(blood, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhpoint"]) { error in
             if let error { print(error.localizedDescription) }
         }
@@ -332,21 +363,25 @@ class GameScene: SKScene {
         if(lives != 0 ) {
             for touch in touches{
                 let loc = touch.location(in: self)
-                if(atPoint(loc).name == "pauseButton"){
-                    self.view?.presentScene(PauseScene())
-                    return
+                let nodeName = atPoint(loc).name
+                if(nodeName == "quitPause"){
+                    resetMatch()
                 }
-                hashFirstTouch = touch.hashValue
-                
-                // Movement area check
-                if (loc.x > size.width * 0.5) {
-                    player.xScale = abs(player.xScale)
-                    player.physicsBody?.velocity = CGVector(dx: baseSpeed * debuffSpeed, dy: 0)
+                if(["pauseButton","resumePause"].contains(nodeName)){
+                    pauseMenuToggle()
                 } else {
-                    player.xScale = abs(player.xScale) * -1
-                    player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
+                    hashFirstTouch = touch.hashValue
+    
+                    // Movement area check
+                    if (loc.x > size.width * 0.5) {
+                        player.xScale = abs(player.xScale)
+                        player.physicsBody?.velocity = CGVector(dx: baseSpeed * debuffSpeed, dy: 0)
+                    } else {
+                        player.xScale = abs(player.xScale) * -1
+                        player.physicsBody?.velocity = CGVector(dx: -baseSpeed * debuffSpeed, dy: 0)
+                    }
                 }
-           }
+            }
         }
     }
     

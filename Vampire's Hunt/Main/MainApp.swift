@@ -14,10 +14,15 @@ struct MainApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+                .onDisappear(){
+                    GKAccessPoint.shared.isActive = false
+                }
                 .onAppear(){
                     if(!firstAppear){
                         firstAppear = true
                         authenticateGK()
+                    } else {
+                        GKAccessPoint.shared.isActive = true
                     }
             }
         }
@@ -43,6 +48,7 @@ struct MainApp: App {
             
             GKAccessPoint.shared.location = .topLeading
             GKAccessPoint.shared.showHighlights = true
+            GKAccessPoint.shared.isActive = true
         }
     }
 }
