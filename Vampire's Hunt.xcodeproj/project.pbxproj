@@ -12,12 +12,13 @@
 		8168B32329476AC600526BE4 /* Projectile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B32229476AC600526BE4 /* Projectile.swift */; };
 		8168B32529476B1100526BE4 /* SpritekitHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8168B32429476B1100526BE4 /* SpritekitHelper.swift */; };
 		8168B3282947901F00526BE4 /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3272947901F00526BE4 /* backgroundMusic.mp3 */; };
-		8168B32B2947918D00526BE4 /* BiteBloodPickup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */; };
-		8168B32C2947918D00526BE4 /* Hitby_falling_object.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B32A2947918D00526BE4 /* Hitby_falling_object.mp3 */; };
+		8168B32B2947918D00526BE4 /* biteBloodPickup.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B3292947918D00526BE4 /* biteBloodPickup.mp3 */; };
+		8168B32C2947918D00526BE4 /* hitFallingObject.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8168B32A2947918D00526BE4 /* hitFallingObject.mp3 */; };
 		819CBF5C294C7B7E00C83127 /* Collectibles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819CBF5B294C7B7E00C83127 /* Collectibles.swift */; };
 		81B9AD3A294A5CF60080EFE5 /* Casaletwo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81B9AD39294A5CF60080EFE5 /* Casaletwo.ttf */; };
 		EA1291E829BB815A0080F38F /* PauseScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1291E729BB815A0080F38F /* PauseScene.swift */; };
 		EA1E26BD29BF62270018D893 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA1E26BF29BF62270018D893 /* Localizable.strings */; };
+		EA44CF4B29BF6D52007EDFBB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA44CF4A29BF6D52007EDFBB /* SettingsView.swift */; };
 		EAAD88F029406FE60013B91C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAAD88EC29406FE50013B91C /* MainView.swift */; };
 		EAAD88F129406FE60013B91C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAAD88ED29406FE50013B91C /* Assets.xcassets */; };
 		EAAD88F229406FE60013B91C /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAAD88EE29406FE50013B91C /* MainApp.swift */; };
@@ -30,13 +31,14 @@
 		8168B32229476AC600526BE4 /* Projectile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Projectile.swift; sourceTree = "<group>"; };
 		8168B32429476B1100526BE4 /* SpritekitHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpritekitHelper.swift; sourceTree = "<group>"; };
 		8168B3272947901F00526BE4 /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
-		8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BiteBloodPickup.mp3; sourceTree = "<group>"; };
-		8168B32A2947918D00526BE4 /* Hitby_falling_object.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Hitby_falling_object.mp3; sourceTree = "<group>"; };
+		8168B3292947918D00526BE4 /* biteBloodPickup.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = biteBloodPickup.mp3; sourceTree = "<group>"; };
+		8168B32A2947918D00526BE4 /* hitFallingObject.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = hitFallingObject.mp3; sourceTree = "<group>"; };
 		819CBF5B294C7B7E00C83127 /* Collectibles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collectibles.swift; sourceTree = "<group>"; };
 		81B9AD39294A5CF60080EFE5 /* Casaletwo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Casaletwo.ttf; sourceTree = "<group>"; };
 		EA1291E729BB815A0080F38F /* PauseScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseScene.swift; sourceTree = "<group>"; };
 		EA1E26BE29BF62270018D893 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		EA1E26C029BF62370018D893 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		EA44CF4A29BF6D52007EDFBB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EA6B0F4229BA847B000C38C4 /* Vampire's Hunt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Vampire's Hunt.entitlements"; sourceTree = "<group>"; };
 		EAAD88D229406FD10013B91C /* Vampire's Hunt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vampire's Hunt.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAAD88EC29406FE50013B91C /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 			children = (
 				EAAD88EE29406FE50013B91C /* MainApp.swift */,
 				EAAD88EC29406FE50013B91C /* MainView.swift */,
+				EA44CF4A29BF6D52007EDFBB /* SettingsView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -80,8 +83,8 @@
 			isa = PBXGroup;
 			children = (
 				8168B3272947901F00526BE4 /* backgroundMusic.mp3 */,
-				8168B3292947918D00526BE4 /* BiteBloodPickup.mp3 */,
-				8168B32A2947918D00526BE4 /* Hitby_falling_object.mp3 */,
+				8168B3292947918D00526BE4 /* biteBloodPickup.mp3 */,
+				8168B32A2947918D00526BE4 /* hitFallingObject.mp3 */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -186,12 +189,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8168B32C2947918D00526BE4 /* Hitby_falling_object.mp3 in Resources */,
+				8168B32C2947918D00526BE4 /* hitFallingObject.mp3 in Resources */,
 				EA1E26BD29BF62270018D893 /* Localizable.strings in Resources */,
 				81B9AD3A294A5CF60080EFE5 /* Casaletwo.ttf in Resources */,
 				8168B3282947901F00526BE4 /* backgroundMusic.mp3 in Resources */,
 				EAAD88F129406FE60013B91C /* Assets.xcassets in Resources */,
-				8168B32B2947918D00526BE4 /* BiteBloodPickup.mp3 in Resources */,
+				8168B32B2947918D00526BE4 /* biteBloodPickup.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +210,7 @@
 				EA1291E829BB815A0080F38F /* PauseScene.swift in Sources */,
 				8168B32329476AC600526BE4 /* Projectile.swift in Sources */,
 				8168B31E29476A5C00526BE4 /* Player.swift in Sources */,
+				EA44CF4B29BF6D52007EDFBB /* SettingsView.swift in Sources */,
 				EAAD88F229406FE60013B91C /* MainApp.swift in Sources */,
 				8168B32029476A8300526BE4 /* Citizen.swift in Sources */,
 				819CBF5C294C7B7E00C83127 /* Collectibles.swift in Sources */,

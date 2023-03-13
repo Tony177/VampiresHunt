@@ -11,8 +11,9 @@ import GameKit
 
 class GameScene: SKScene {
     private let baseSpeed : CGFloat = 300
-    private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic.mp3")
-    
+    private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic")
+    private let biteAudioNode = SKAudioNode(fileNamed: "biteBloodPickup")
+    private let hitAudioNode = SKAudioNode(fileNamed: "hitFallingObject")
     private var hashFirstTouch : Int = 0
     private var player = Player()
     private var stage : Int = 1
@@ -32,17 +33,9 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         self.view?.isMultipleTouchEnabled = true
         self.view?.isExclusiveTouch = true
-        audioEngine.mainMixerNode.outputVolume = 0.0
-        musicAudioNode.autoplayLooped = true
-        musicAudioNode.isPositional = false
-        addChild(musicAudioNode)
-        musicAudioNode.run(SKAction.changeVolume(to: 0.0, duration: 0.0))
-        run(SKAction.wait(forDuration: 1.0)) {
-            [unowned self] in self.audioEngine.mainMixerNode.outputVolume = 1.0
-            self.musicAudioNode.run(SKAction.changeVolume(to: audioMusic, duration: 2.0))
-        }
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
+        setupAudio()
         changeBackground()
         addMenu()
         setClock()
@@ -50,6 +43,21 @@ class GameScene: SKScene {
         startSpawn()
         changeLevel()
         
+    }
+    private func setupAudio(){
+        audioEngine.mainMixerNode.outputVolume = 0.0
+        biteAudioNode.autoplayLooped = false
+        hitAudioNode.autoplayLooped = false
+        addChild(musicAudioNode)
+        addChild(biteAudioNode)
+        addChild(hitAudioNode)
+        biteAudioNode.run(SKAction.changeVolume(to: audioSFX, duration: 0.1))
+        hitAudioNode.run(SKAction.changeVolume(to: audioSFX, duration: 0.1))
+        musicAudioNode.run(SKAction.changeVolume(to: 0.0, duration: 0.0))
+        run(SKAction.wait(forDuration: 1.0)) {
+            [unowned self] in self.audioEngine.mainMixerNode.outputVolume = 1.0
+            self.musicAudioNode.run(SKAction.changeVolume(to: audioMusic, duration: 2.0))
+        }
     }
     private func changeBackground(){
         let background = SKSpriteNode(imageNamed: "background\(stage)")
@@ -376,10 +384,7 @@ extension GameScene : SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.arrow != 0)) {
             if let player = firstBody.node as? Player,
                let projectile = secondBody.node as? Projectile {
-                let arrowAudioNode = SKAction.playSoundFileNamed("Hitby_falling_object.mp3", waitForCompletion: false)
-                let changeVolumeAction = SKAction.changeVolume(to: 1.0, duration: 0.5)
-                let effectAudioGroup = SKAction.group([arrowAudioNode,changeVolumeAction])
-                run(effectAudioGroup)
+                hitAudioNode.run(SKAction.play())
                 projectileDidCollideWithPlayer(projectile: projectile, player: player)
                 return
             }
@@ -389,8 +394,7 @@ extension GameScene : SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.citizen != 0)) {
             if let citizen = secondBody.node as? Citizen {
                 let player = firstBody.node as? Player
-                let bitAudioNode = SKAction.playSoundFileNamed("BiteBloodPickup.mp3", waitForCompletion: false)
-                run(bitAudioNode)
+                biteAudioNode.run(SKAction.play())
                 citizenDidCollideWithPlayer(citizen: citizen, player: player!)
                 return
             }

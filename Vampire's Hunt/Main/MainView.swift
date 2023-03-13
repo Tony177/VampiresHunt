@@ -33,15 +33,15 @@ struct MainView: View {
                     } label: {
                         ZStack{
                             Image("bgButton")
-                            Text(LocalizedStringKey("START")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.red)
+                            Text(LocalizedStringKey("START")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.customRed)
                         }
                     }
                     NavigationLink {
-                        EmptyView()
+                        SettingsView()
                     } label: {
                         ZStack{
                             Image("bgButton")
-                            Text(LocalizedStringKey("SETTINGS")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.red)
+                            Text(LocalizedStringKey("SETTINGS")).font(.custom("CasaleTwo NBP", size: 20)).foregroundColor(.customRed)
                         }
                     }
                 }

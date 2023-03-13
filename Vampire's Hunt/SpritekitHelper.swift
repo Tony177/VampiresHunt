@@ -7,6 +7,7 @@
 
 import Foundation
 import SpriteKit
+import SwiftUI
 
 private let pC1 : [CGFloat] = [0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.6, 0.55, 0.47, 0.44, 0.4]
 private let pC2 : [CGFloat] = [0.1, 0.15, 0.2, 0.28, 0.32, 0.36, 0.35, 0.4, 0.47, 0.5, 0.53]
@@ -34,6 +35,9 @@ enum PhysicsCategory {
     static let player: UInt32 = UInt32(1)
     static let arrow: UInt32 = UInt32(2)
     static let citizen: UInt32 = UInt32(4)
+}
+extension Color {
+    static let customRed = Color("customRed")
 }
 
 extension SKSpriteNode{

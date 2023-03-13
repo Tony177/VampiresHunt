@@ -8,3 +8,5 @@
 
 "START" = "START";
 "SETTINGS" = "SETTINGS";
+"music" = "Background music value:";
+"sfx" = "SFX audio value:";

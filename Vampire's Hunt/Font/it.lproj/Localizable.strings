@@ -8,3 +8,5 @@
 
 "START" = "INIZIO";
 "SETTINGS" = "OPZIONI";
+"music" = "Valore musica sottofondo:";
+"sfx" = "Valore effetti sonori:";
