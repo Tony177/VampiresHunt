@@ -48,7 +48,7 @@ struct MainApp: App {
             
             GKAccessPoint.shared.location = .topLeading
             GKAccessPoint.shared.showHighlights = true
-            GKAccessPoint.shared.isActive = true
+            GKAccessPoint.shared.isActive = false
         }
     }
 }

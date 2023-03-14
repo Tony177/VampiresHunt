@@ -10,3 +10,8 @@
 "SETTINGS" = "OPZIONI";
 "music" = "Valore musica sottofondo:";
 "sfx" = "Valore effetti sonori:";
+"score" = "Punteggio:";
+"time" = "Tempo:";
+"RESUME" = "RIPRENDI";
+"QUIT" = "ESCI";
+"RETRY" = "RIPROVA";

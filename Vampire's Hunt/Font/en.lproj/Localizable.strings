@@ -10,3 +10,8 @@
 "SETTINGS" = "SETTINGS";
 "music" = "Background music value:";
 "sfx" = "SFX audio value:";
+"score" = "Score:";
+"time" = "Time:";
+"RESUME" = "RESUME";
+"QUIT" = "QUIT";
+"RETRY" = "RETRY";

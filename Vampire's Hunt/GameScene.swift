@@ -11,7 +11,6 @@ import GameKit
 import SwiftUI
 
 class GameScene: SKScene {
-    public var previousView : MainView = MainView()
     private let baseSpeed : CGFloat = 300
     private let musicAudioNode = SKAudioNode(fileNamed: "backgroundMusic")
     private let biteAudioNode = SKAudioNode(fileNamed: "biteBloodPickup")
@@ -368,7 +367,7 @@ class GameScene: SKScene {
     }
     
     func resetMatch() {
-        let viewController = UIHostingController(rootView: previousView)
+        let viewController = UIHostingController(rootView: EndView(score: Binding.constant(blood), time: Binding.constant(clock)))
         viewController.view.frame = self.frame
         self.removeAllChildren()
         GKLeaderboard.submitScore(blood, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhpoint"]) { error in

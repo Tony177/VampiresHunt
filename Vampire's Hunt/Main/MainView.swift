@@ -14,7 +14,6 @@ struct MainView: View {
         let scene = GameScene()
         scene.size = CGSize(width: 256, height: 256)
         scene.scaleMode = .resizeFill
-        scene.previousView = self
         scene.view?.ignoresSiblingOrder = true
         scene.view?.shouldCullNonVisibleNodes = true
         let reveal = SKTransition.reveal(with: .down,duration: 1000)
