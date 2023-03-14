@@ -19,6 +19,7 @@ private let ArC3 : [CGFloat] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.05, 0.1, 
 
 public var audioSFX : Float = UserDefaults.standard.object(forKey: "audioSFX") as? Float ?? 1.0
 public var audioMusic : Float = UserDefaults.standard.object(forKey: "audioMusic") as? Float ?? 1.0
+
 enum Layer: CGFloat{
     case background
     case player

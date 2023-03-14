@@ -14,13 +14,12 @@ struct MainView: View {
         let scene = GameScene()
         scene.size = CGSize(width: 256, height: 256)
         scene.scaleMode = .resizeFill
+        scene.previousView = self
         let reveal = SKTransition.reveal(with: .down,duration: 1000)
         scene.view?.presentScene(scene, transition: reveal)
         return scene
     }
-    
-    @State var isStartGame = false
-    
+
     var body: some View {
         NavigationStack{
             ZStack{
