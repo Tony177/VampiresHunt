@@ -101,34 +101,39 @@ class GameScene: SKScene {
         
     }
     private func pauseMenuOn(){
-        
-            let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 32)!]
-            let p1 = SKLabelNode()
-            p1.attributedText =  NSAttributedString(string: NSLocalizedString("RESUME", comment: "RESUME"),attributes: attributes)
-            p1.name = "resumePause"
-            p1.position = CGPoint(x: size.width/2, y: size.height/1.8)
-            p1.zPosition = Layer.buttonPause.rawValue
-            let p2 = SKLabelNode()
-            p2.attributedText =  NSAttributedString(string: NSLocalizedString("QUIT", comment: "QUIT"),attributes: attributes)
-            p2.name = "quitPause"
-            p2.position = CGPoint(x: size.width/2, y: size.height/2.7)
-            p2.zPosition = Layer.buttonPause.rawValue
-            let p3 = SKSpriteNode(imageNamed: "pauseBackground")
-            p3.name = "backgroundPause"
-            p3.size = CGSize(width: size.width/2, height: size.height/2)
-            p3.position = CGPoint(x: size.width/2, y: size.height/2)
-            p3.zPosition = Layer.backgroundPause.rawValue
-            childNode(withName: "pauseButton")?.isHidden = true
-            realPaused = true
-            addChild(p1)
-            addChild(p2)
-            addChild(p3)
-        
+        realPaused = true
+        childNode(withName: "pauseButton")?.isHidden = true
+        let p = SKNode()
+        p.name = "pauseMenu"
+        let attributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(.red), .font: UIFont(name: "CasaleTwo NBP", size: 28)!]
+        let p1 = SKLabelNode()
+        p1.attributedText =  NSAttributedString(string: NSLocalizedString("RESUME", comment: "RESUME"),attributes: attributes)
+        p1.name = "resumePause"
+        p1.position = CGPoint(x: size.width/2, y: size.height/1.8)
+        p1.zPosition = Layer.buttonPause.rawValue
+        let p2 = SKLabelNode()
+        p2.attributedText =  NSAttributedString(string: NSLocalizedString("QUIT", comment: "QUIT"),attributes: attributes)
+        p2.name = "quitPause"
+        p2.position = CGPoint(x: size.width/2, y: size.height/2.7)
+        p2.zPosition = Layer.buttonPause.rawValue
+        let p4 = SKSpriteNode(imageNamed: "bgButton")
+        p4.name = "resumePauseBg"
+        p4.position = CGPoint(x: size.width/2, y: size.height/1.7)
+        p4.zPosition = Layer.backgroundButtonPause.rawValue
+        let p5 = SKSpriteNode(imageNamed: "bgButton")
+        p5.name = "quitPauseBg"
+        p5.position = CGPoint(x: size.width/2, y: size.height/2.5)
+        p5.zPosition = Layer.backgroundButtonPause.rawValue
+        addChild(p)
+        p.addChild(p1)
+        p.addChild(p2)
+        p.addChild(p4)
+        p.addChild(p5)
     }
     private func pauseMenuOff(){
-        removeChildren(in: [childNode(withName: "resumePause")!])
-        removeChildren(in: [childNode(withName: "quitPause")!])
-        removeChildren(in: [childNode(withName: "backgroundPause")!])
+        let p = childNode(withName: "pauseMenu")
+        p?.removeAllChildren()
+        p?.removeFromParent()
         childNode(withName: "pauseButton")?.isHidden = false
         realPaused = false
     }
@@ -349,17 +354,22 @@ class GameScene: SKScene {
             lives -= 1
         }
         if(lives == 0) {
-            let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
-            player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
-            player.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
-            resetMatch()
+            self.removeAllActions()
+            run(SKAction.sequence([SKAction.run({
+                let deathTexture : [SKTexture] = player.loadTexture(atlas: "Vampire", prefix: "VampireDying", startsAt: 1, stopAt: 12)
+                player.startAnimation(texture: deathTexture, speed: 0.15, name: "die", count: 1, resize: true, restore: true)
+                player.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
+            }),SKAction.wait(forDuration: 12*0.15),SKAction.run {
+                self.resetMatch()
+            }]))
+            
+            
         }
     }
     
     func resetMatch() {
         let viewController = UIHostingController(rootView: previousView)
         viewController.view.frame = self.frame
-        self.removeAllActions()
         self.removeAllChildren()
         GKLeaderboard.submitScore(blood, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.nanashi.vhpoint"]) { error in
             if let error { print(error.localizedDescription) }

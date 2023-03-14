@@ -12,35 +12,39 @@ struct SettingsView: View {
     @State var audioMusicState : Float = audioMusic
     var body: some View {
         NavigationStack{
-            
-            HStack{
-                Text(LocalizedStringKey("sfx"))
-                Text(audioSFXState.formatted(.number))
+            ZStack{
+                Image("TitleScreen").resizable().ignoresSafeArea()
+                VStack{
+                    HStack{
+                        Text(LocalizedStringKey("sfx"))
+                        Text(audioSFXState.formatted(.number))
+                    }
+                    Slider(value:$audioSFXState,in: 0...1.0,step:0.1)
+                    {
+                        Text("Audio Effect")
+                    } minimumValueLabel: {
+                        Text("0")
+                    } maximumValueLabel: {
+                        Text("1")
+                    }.tint(.customRed)
+                    Spacer().frame(height: 60)
+                    HStack{
+                        Text(LocalizedStringKey("music"))
+                        Text(audioMusicState.formatted(.number))
+                    }
+                    Slider(value:$audioMusicState,in: 0...1.0,step:0.1)
+                    {
+                        Text("Background Music")
+                    } minimumValueLabel: {
+                        Text("0")
+                    } maximumValueLabel: {
+                        Text("1")
+                    }.tint(.customRed)
+                }
             }
-            Slider(value:$audioSFXState,in: 0...1.0,step:0.1)
-            {
-                Text("Audio Effect")
-            } minimumValueLabel: {
-                Text("0")
-            } maximumValueLabel: {
-                Text("1")
-            }.tint(.customRed)
-            Spacer().frame(height: 60)
-            HStack{
-                Text(LocalizedStringKey("music"))
-                Text(audioMusicState.formatted(.number))
-            }
-            Slider(value:$audioMusicState,in: 0...1.0,step:0.1)
-            {
-                Text("Background Music")
-            } minimumValueLabel: {
-                Text("0")
-            } maximumValueLabel: {
-                Text("1")
-            }.tint(.customRed)
-            
         }.font(.custom("CasaleTwo NBP", size: 22))
-        .padding()
+            .foregroundColor(.white)
+        
             .onDisappear(){
                 UserDefaults.standard.set(audioSFXState, forKey: "audioSFX")
                 UserDefaults.standard.set(audioMusicState, forKey: "audioMusic")

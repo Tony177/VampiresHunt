@@ -28,6 +28,7 @@ enum Layer: CGFloat{
     case collectible
     case ui
     case backgroundPause
+    case backgroundButtonPause
     case buttonPause
 }
 
