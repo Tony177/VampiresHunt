@@ -76,6 +76,7 @@ class GameScene: SKScene {
         background.name = "background"
         background.zPosition = Layer.background.rawValue
         background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        background.size = self.scene!.size
         addChild(background)
     }
     private func changeLevel(){
